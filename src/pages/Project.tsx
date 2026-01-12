@@ -4,6 +4,8 @@ import { Header } from '@/components/layout/Header';
 import { ScriptInput } from '@/components/script/ScriptInput';
 import { SceneList } from '@/components/script/SceneList';
 import { WorkflowStepper } from '@/components/project/WorkflowStepper';
+import { CharacterList } from '@/components/project/CharacterList';
+import { ThemeMusicSection } from '@/components/project/ThemeMusicSection';
 import { StoryboardSummaryCard } from '@/components/project/StoryboardSummaryCard';
 import { ShotsSummaryCard } from '@/components/project/ShotsSummaryCard';
 import { AnimaticSummaryCard } from '@/components/project/AnimaticSummaryCard';
@@ -178,6 +180,16 @@ export default function Project() {
           </TabsContent>
 
           <TabsContent value="scenes" className="space-y-6">
+            {/* Character & Theme Section */}
+            <div className="grid gap-6 lg:grid-cols-2">
+              <CharacterList 
+                scenes={projectScenes} 
+                projectId={projectId!} 
+              />
+              <ThemeMusicSection projectId={projectId!} />
+            </div>
+
+            {/* Scene List */}
             <SceneList
               scenes={projectScenes}
               projectId={projectId!}
