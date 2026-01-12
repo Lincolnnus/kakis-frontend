@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Dialog,
   DialogContent,
@@ -30,6 +30,28 @@ import {
 } from 'lucide-react';
 import { Scene } from '@/types';
 
+// Import character images
+import lunaImg from '@/assets/characters/luna.png';
+import starkeeperImg from '@/assets/characters/starkeeper.png';
+import rustyImg from '@/assets/characters/rusty.png';
+import cloverImg from '@/assets/characters/clover.png';
+import felixImg from '@/assets/characters/felix.png';
+import fernImg from '@/assets/characters/fern.png';
+import oliverImg from '@/assets/characters/oliver.png';
+
+// Character image mapping
+const CHARACTER_IMAGES: Record<string, string> = {
+  'Luna': lunaImg,
+  'The Starkeeper': starkeeperImg,
+  'Starkeeper': starkeeperImg,
+  'Rusty': rustyImg,
+  'Clover': cloverImg,
+  'Felix': felixImg,
+  'Fern': fernImg,
+  'Oliver': oliverImg,
+  'Poppy': cloverImg, // Reuse rabbit image for Poppy
+};
+
 interface Character {
   name: string;
   sceneCount: number;
@@ -37,6 +59,7 @@ interface Character {
   description?: string;
   voiceType?: string;
   color: string;
+  imageUrl?: string;
 }
 
 interface CharacterListProps {
@@ -94,6 +117,7 @@ export function CharacterList({ scenes, projectId }: CharacterListProps) {
       sceneCount: stats.sceneCount,
       dialogueCount: stats.dialogueCount,
       color: AVATAR_COLORS[colorIndex % AVATAR_COLORS.length],
+      imageUrl: CHARACTER_IMAGES[name],
     });
     colorIndex++;
   });
@@ -145,7 +169,10 @@ export function CharacterList({ scenes, projectId }: CharacterListProps) {
                     className="flex items-center gap-3 rounded-lg border bg-card p-3 text-left transition-colors hover:bg-muted/50"
                     onClick={() => setEditingCharacter(character)}
                   >
-                    <Avatar className={character.color}>
+                    <Avatar className={`h-12 w-12 ${!character.imageUrl ? character.color : ''}`}>
+                      {character.imageUrl && (
+                        <AvatarImage src={character.imageUrl} alt={character.name} className="object-cover" />
+                      )}
                       <AvatarFallback className="text-white font-medium">
                         {character.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
@@ -164,7 +191,10 @@ export function CharacterList({ scenes, projectId }: CharacterListProps) {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                      <Avatar className={`h-8 w-8 ${character.color}`}>
+                      <Avatar className={`h-10 w-10 ${!character.imageUrl ? character.color : ''}`}>
+                        {character.imageUrl && (
+                          <AvatarImage src={character.imageUrl} alt={character.name} className="object-cover" />
+                        )}
                         <AvatarFallback className="text-white text-sm">
                           {character.name.slice(0, 2).toUpperCase()}
                         </AvatarFallback>

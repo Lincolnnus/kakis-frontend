@@ -17,6 +17,11 @@ import lunaFrame13 from '@/assets/storyboard/luna-frame-13.png';
 import lunaFrame14 from '@/assets/storyboard/luna-frame-14.png';
 import lunaFrame15 from '@/assets/storyboard/luna-frame-15.png';
 
+// Import project thumbnails
+import lunaThumb from '@/assets/thumbnails/luna-starkeeper-thumb.png';
+import robotThumb from '@/assets/thumbnails/robot-garden-thumb.png';
+import felixThumb from '@/assets/thumbnails/felix-fox-thumb.png';
+
 export const mockUser: User = {
   id: 'user-1',
   name: 'Alex Director',
@@ -29,7 +34,7 @@ export const mockProjects: Project[] = [
     id: 'project-1',
     title: 'Luna & The Starkeeper',
     description: 'An animated short about a lonely girl who befriends the keeper of the stars',
-    thumbnail: undefined,
+    thumbnail: lunaThumb,
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-18'),
     frameCount: 24,
@@ -39,7 +44,7 @@ export const mockProjects: Project[] = [
     id: 'project-2',
     title: 'The Robot\'s Garden',
     description: 'A heartwarming tale of a robot learning to grow flowers in a post-apocalyptic world',
-    thumbnail: undefined,
+    thumbnail: robotThumb,
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-12'),
     frameCount: 18,
@@ -49,7 +54,7 @@ export const mockProjects: Project[] = [
     id: 'project-3',
     title: 'Felix the Fearful Fox',
     description: 'A young fox overcomes his fears to save his forest friends',
-    thumbnail: undefined,
+    thumbnail: felixThumb,
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-05'),
     frameCount: 0,

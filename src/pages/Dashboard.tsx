@@ -86,11 +86,19 @@ export default function Dashboard() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredProjects.map((project) => (
             <Link key={project.id} to={`/project/${project.id}`}>
-              <Card className="group cursor-pointer transition-all hover:border-primary/50 hover:shadow-lg">
-                <div className="aspect-video w-full overflow-hidden rounded-t-lg bg-muted">
-                  <div className="flex h-full items-center justify-center">
-                    <Film className="h-12 w-12 text-muted-foreground/50" />
-                  </div>
+              <Card className="group cursor-pointer overflow-hidden transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="aspect-video w-full overflow-hidden bg-muted">
+                  {project.thumbnail ? (
+                    <img 
+                      src={project.thumbnail} 
+                      alt={project.title}
+                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <Film className="h-12 w-12 text-muted-foreground/50" />
+                    </div>
+                  )}
                 </div>
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
