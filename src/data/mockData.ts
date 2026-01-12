@@ -1,5 +1,22 @@
 import { Project, Scene, StoryboardFrame, Shot, User } from '@/types';
 
+// Import Luna & The Starkeeper storyboard images
+import lunaFrame1 from '@/assets/storyboard/luna-frame-1.png';
+import lunaFrame2 from '@/assets/storyboard/luna-frame-2.png';
+import lunaFrame3 from '@/assets/storyboard/luna-frame-3.png';
+import lunaFrame4 from '@/assets/storyboard/luna-frame-4.png';
+import lunaFrame5 from '@/assets/storyboard/luna-frame-5.png';
+import lunaFrame6 from '@/assets/storyboard/luna-frame-6.png';
+import lunaFrame7 from '@/assets/storyboard/luna-frame-7.png';
+import lunaFrame8 from '@/assets/storyboard/luna-frame-8.png';
+import lunaFrame9 from '@/assets/storyboard/luna-frame-9.png';
+import lunaFrame10 from '@/assets/storyboard/luna-frame-10.png';
+import lunaFrame11 from '@/assets/storyboard/luna-frame-11.png';
+import lunaFrame12 from '@/assets/storyboard/luna-frame-12.png';
+import lunaFrame13 from '@/assets/storyboard/luna-frame-13.png';
+import lunaFrame14 from '@/assets/storyboard/luna-frame-14.png';
+import lunaFrame15 from '@/assets/storyboard/luna-frame-15.png';
+
 export const mockUser: User = {
   id: 'user-1',
   name: 'Alex Director',
@@ -263,7 +280,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-1-1',
     sceneId: 'scene-1-1',
     frameNumber: 1,
-    imageUrl: undefined,
+    imageUrl: lunaFrame1,
     description: 'Wide shot of Luna\'s cozy attic bedroom. Moonlight streams through circular window. Glow stars on ceiling.',
     cameraAngle: 'Wide',
     cameraMovement: 'Static',
@@ -275,7 +292,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-1-2',
     sceneId: 'scene-1-1',
     frameNumber: 2,
-    imageUrl: undefined,
+    imageUrl: lunaFrame2,
     description: 'Close-up of Luna\'s face, eyes open, looking up at ceiling stars. Expression of wonder and loneliness.',
     cameraAngle: 'Close-up',
     cameraMovement: 'Slow push in',
@@ -288,7 +305,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-1-3',
     sceneId: 'scene-1-1',
     frameNumber: 3,
-    imageUrl: undefined,
+    imageUrl: lunaFrame3,
     description: 'Luna sits up in bed, looking toward the window. Real stars visible outside, contrasting with plastic ones.',
     cameraAngle: 'Medium',
     cameraMovement: 'Pan to window',
@@ -301,7 +318,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-1-4',
     sceneId: 'scene-1-1',
     frameNumber: 4,
-    imageUrl: undefined,
+    imageUrl: lunaFrame4,
     description: 'Shooting star streaks across the sky through the window. Luna\'s eyes light up with excitement.',
     cameraAngle: 'Over-shoulder',
     cameraMovement: 'Static',
@@ -315,7 +332,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-2-1',
     sceneId: 'scene-1-2',
     frameNumber: 5,
-    imageUrl: undefined,
+    imageUrl: lunaFrame5,
     description: 'Luna climbing through window onto moonlit rooftop. Town visible below, vast starry sky above.',
     cameraAngle: 'Wide',
     cameraMovement: 'Tilt up',
@@ -327,7 +344,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-2-2',
     sceneId: 'scene-1-2',
     frameNumber: 6,
-    imageUrl: undefined,
+    imageUrl: lunaFrame6,
     description: 'Luna discovers the mysterious glowing ladder stretching up into the clouds.',
     cameraAngle: 'Low angle',
     cameraMovement: 'Slow tilt up',
@@ -340,7 +357,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-2-3',
     sceneId: 'scene-1-2',
     frameNumber: 7,
-    imageUrl: undefined,
+    imageUrl: lunaFrame7,
     description: 'Luna\'s small hand grasps the first rung. Determination on her face.',
     cameraAngle: 'Close-up',
     cameraMovement: 'Static',
@@ -354,7 +371,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-3-1',
     sceneId: 'scene-1-3',
     frameNumber: 8,
-    imageUrl: undefined,
+    imageUrl: lunaFrame8,
     description: 'Wide establishing shot of cloud workshop. Floating lanterns, star gardens, The Starkeeper\'s silhouette.',
     cameraAngle: 'Extreme Wide',
     cameraMovement: 'Slow drift',
@@ -366,7 +383,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-3-2',
     sceneId: 'scene-1-3',
     frameNumber: 9,
-    imageUrl: undefined,
+    imageUrl: lunaFrame9,
     description: 'Luna emerges from clouds, jaw dropped, taking in the impossible workshop.',
     cameraAngle: 'Medium',
     cameraMovement: 'Arc around Luna',
@@ -378,7 +395,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-3-3',
     sceneId: 'scene-1-3',
     frameNumber: 10,
-    imageUrl: undefined,
+    imageUrl: lunaFrame10,
     description: 'The Starkeeper turns - his body is made of flowing constellations, ancient and kind.',
     cameraAngle: 'Medium',
     cameraMovement: 'Static',
@@ -391,7 +408,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-3-4',
     sceneId: 'scene-1-3',
     frameNumber: 11,
-    imageUrl: undefined,
+    imageUrl: lunaFrame11,
     description: 'Two-shot of Luna and Starkeeper, size contrast emphasized. Luna looks tiny but brave.',
     cameraAngle: 'Wide',
     cameraMovement: 'Static',
@@ -406,7 +423,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-4-1',
     sceneId: 'scene-1-4',
     frameNumber: 12,
-    imageUrl: undefined,
+    imageUrl: lunaFrame12,
     description: 'Wide shot of workshop interior - shelves of stardust jars, moonbeam telescope, sleeping baby stars.',
     cameraAngle: 'Wide',
     cameraMovement: 'Pan across',
@@ -418,7 +435,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-4-2',
     sceneId: 'scene-1-4',
     frameNumber: 13,
-    imageUrl: undefined,
+    imageUrl: lunaFrame13,
     description: 'Close-up of Luna\'s hand touching a jar of glittering stardust, colors reflecting in her eyes.',
     cameraAngle: 'Close-up',
     cameraMovement: 'Static',
@@ -431,7 +448,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-4-3',
     sceneId: 'scene-1-4',
     frameNumber: 14,
-    imageUrl: undefined,
+    imageUrl: lunaFrame14,
     description: 'Starkeeper gestures sadly toward corner where dim, flickering stars huddle together.',
     cameraAngle: 'Medium',
     cameraMovement: 'Dolly to corner',
@@ -444,7 +461,7 @@ export const mockFrames: StoryboardFrame[] = [
     id: 'frame-1-4-4',
     sceneId: 'scene-1-4',
     frameNumber: 15,
-    imageUrl: undefined,
+    imageUrl: lunaFrame15,
     description: 'Luna kneels beside the dim stars, reaching out gently. Starkeeper watches with hope.',
     cameraAngle: 'Medium',
     cameraMovement: 'Static',
