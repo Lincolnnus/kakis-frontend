@@ -1,11 +1,22 @@
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Film, Menu, X } from 'lucide-react';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { Film, Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuth();
+  const { currentPlan } = useSubscription();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -40,12 +51,46 @@ export function Header() {
               <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
                 Dashboard
               </Link>
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-muted-foreground">{user?.name}</span>
-                <Button variant="outline" size="sm" onClick={logout}>
-                  Log Out
-                </Button>
-              </div>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm">{user?.name}</span>
+                    <Badge variant="secondary" className="ml-1 text-xs">
+                      {currentPlan.name}
+                    </Badge>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span>{user?.name}</span>
+                      <span className="text-xs font-normal text-muted-foreground">{user?.email}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/billing" className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Billing
+                      {currentPlan.id === 'free' && (
+                        <Badge className="ml-auto text-xs" variant="secondary">
+                          <Sparkles className="mr-1 h-3 w-3" />
+                          Upgrade
+                        </Badge>
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout} className="text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
@@ -101,12 +146,29 @@ export function Header() {
             
             {isAuthenticated ? (
               <>
+                <div className="flex items-center gap-2 pb-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{user?.name}</p>
+                    <Badge variant="secondary" className="text-xs">{currentPlan.name}</Badge>
+                  </div>
+                </div>
                 <Link 
                   to="/dashboard" 
                   className="text-muted-foreground hover:text-foreground"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Dashboard
+                </Link>
+                <Link 
+                  to="/billing" 
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <CreditCard className="h-4 w-4" />
+                  Billing
                 </Link>
                 <Button variant="outline" onClick={() => { logout(); setMobileMenuOpen(false); }}>
                   Log Out
