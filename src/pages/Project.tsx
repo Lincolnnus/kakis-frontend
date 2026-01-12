@@ -3,6 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { ScriptInput } from '@/components/script/ScriptInput';
 import { SceneList } from '@/components/script/SceneList';
+import { WorkflowStepper } from '@/components/project/WorkflowStepper';
+import { StoryboardSummaryCard } from '@/components/project/StoryboardSummaryCard';
+import { ShotsSummaryCard } from '@/components/project/ShotsSummaryCard';
+import { AnimaticSummaryCard } from '@/components/project/AnimaticSummaryCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProject } from '@/contexts/ProjectContext';
@@ -12,6 +16,7 @@ import {
   ArrowLeft, 
   FileText, 
   Layers, 
+  Image,
   ListChecks, 
   Film,
   Settings
@@ -22,7 +27,9 @@ export default function Project() {
   const navigate = useNavigate();
   const { 
     projects, 
-    scenes, 
+    scenes,
+    frames,
+    shots,
     setCurrentProject,
     addScene,
     updateScene,
@@ -35,6 +42,12 @@ export default function Project() {
 
   const project = projects.find(p => p.id === projectId);
   const projectScenes = scenes.filter(s => s.projectId === projectId);
+  const projectFrames = frames.filter(f => projectScenes.some(s => s.id === f.sceneId));
+  const projectShots = shots.filter(s => s.projectId === projectId);
+  
+  // Track if script has been parsed (has scenes)
+  const scriptHasContent = projectScenes.length > 0;
+  const hasAnimatic = projectFrames.length > 0; // Simple check for now
 
   useEffect(() => {
     if (project) {
@@ -109,9 +122,20 @@ export default function Project() {
           </div>
         </div>
 
+        {/* Workflow Stepper */}
+        <WorkflowStepper
+          scriptHasContent={scriptHasContent}
+          sceneCount={projectScenes.length}
+          frameCount={projectFrames.length}
+          shotCount={projectShots.length}
+          hasAnimatic={hasAnimatic}
+          activeTab={activeTab}
+          onStepClick={setActiveTab}
+        />
+
         {/* Project Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5">
             <TabsTrigger value="script" className="gap-2">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Script</span>
@@ -125,9 +149,23 @@ export default function Project() {
                 </span>
               )}
             </TabsTrigger>
+            <TabsTrigger value="storyboard" className="gap-2">
+              <Image className="h-4 w-4" />
+              <span className="hidden sm:inline">Storyboard</span>
+              {projectFrames.length > 0 && (
+                <span className="ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs">
+                  {projectFrames.length}
+                </span>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="shots" className="gap-2">
               <ListChecks className="h-4 w-4" />
-              <span className="hidden sm:inline">Shot List</span>
+              <span className="hidden sm:inline">Shots</span>
+              {projectShots.length > 0 && (
+                <span className="ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs">
+                  {projectShots.length}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger value="animatic" className="gap-2">
               <Film className="h-4 w-4" />
@@ -150,24 +188,29 @@ export default function Project() {
             />
           </TabsContent>
 
-          <TabsContent value="shots">
-            <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16">
-              <ListChecks className="mb-4 h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mb-2 text-lg font-medium">Shot List Coming Soon</h3>
-              <p className="text-muted-foreground">
-                Generate storyboard frames first, then build your shot list.
-              </p>
-            </div>
+          <TabsContent value="storyboard" className="space-y-6">
+            <StoryboardSummaryCard
+              projectId={projectId!}
+              scenes={projectScenes}
+              frames={projectFrames}
+            />
           </TabsContent>
 
-          <TabsContent value="animatic">
-            <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16">
-              <Film className="mb-4 h-12 w-12 text-muted-foreground/50" />
-              <h3 className="mb-2 text-lg font-medium">Animatic Coming Soon</h3>
-              <p className="text-muted-foreground">
-                Create storyboard frames first, then build your animatic.
-              </p>
-            </div>
+          <TabsContent value="shots" className="space-y-6">
+            <ShotsSummaryCard
+              projectId={projectId!}
+              shots={projectShots}
+              frames={projectFrames}
+              sceneCount={projectScenes.length}
+            />
+          </TabsContent>
+
+          <TabsContent value="animatic" className="space-y-6">
+            <AnimaticSummaryCard
+              projectId={projectId!}
+              frames={projectFrames}
+              sceneCount={projectScenes.length}
+            />
           </TabsContent>
         </Tabs>
       </main>
