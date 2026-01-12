@@ -40,6 +40,8 @@ interface FrameCardProps {
   onDelete: (id: string) => void;
   onGenerate: (id: string, prompt: string, style: FrameStyle) => Promise<void>;
   sceneHeading?: string;
+  sceneNumber?: number;
+  frameInScene?: number;
 }
 
 const PLACEHOLDER_COLORS = [
@@ -50,7 +52,7 @@ const PLACEHOLDER_COLORS = [
   'from-pink-500/20 to-rose-500/20',
 ];
 
-export function FrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading }: FrameCardProps) {
+export function FrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading, sceneNumber, frameInScene }: FrameCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [editedFrame, setEditedFrame] = useState(frame);
@@ -108,9 +110,9 @@ export function FrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading 
             </div>
           )}
 
-          {/* Frame Number Badge */}
-          <Badge className="absolute left-2 top-2 bg-background/80 backdrop-blur-sm">
-            {frame.frameNumber}
+          {/* Scene & Frame Number Badge */}
+          <Badge className="absolute left-2 top-2 bg-background/80 backdrop-blur-sm font-mono">
+            {sceneNumber && frameInScene ? `S${sceneNumber} · F${frameInScene}` : frame.frameNumber}
           </Badge>
 
           {/* Style Badge */}
@@ -176,7 +178,9 @@ export function FrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading 
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Frame {frame.frameNumber}</DialogTitle>
+            <DialogTitle>
+              Edit Frame {sceneNumber && frameInScene ? `S${sceneNumber} · F${frameInScene}` : frame.frameNumber}
+            </DialogTitle>
             <DialogDescription>
               {sceneHeading || 'Update frame details and generation settings'}
             </DialogDescription>

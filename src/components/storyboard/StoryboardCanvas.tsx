@@ -200,6 +200,20 @@ export function StoryboardCanvas({
     return scenes.find(s => s.id === frame.sceneId);
   };
 
+  // Compute frame position within its scene
+  const getFrameSceneInfo = (frame: StoryboardFrame) => {
+    const scene = getSceneForFrame(frame);
+    if (!scene) return { sceneNumber: undefined, frameInScene: undefined };
+    
+    const framesInScene = sortedFrames.filter(f => f.sceneId === scene.id);
+    const frameInScene = framesInScene.findIndex(f => f.id === frame.id) + 1;
+    
+    return { 
+      sceneNumber: scene.sceneNumber, 
+      frameInScene 
+    };
+  };
+
   if (frames.length === 0 && scenes.length === 0) {
     return (
       <Card>
@@ -307,16 +321,21 @@ export function StoryboardCanvas({
               ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
               : 'space-y-4'
           }>
-            {sortedFrames.map((frame) => (
-              <SortableFrameCard
-                key={frame.id}
-                frame={frame}
-                onUpdate={onUpdateFrame}
-                onDelete={onDeleteFrame}
-                onGenerate={generateImage}
-                sceneHeading={getSceneForFrame(frame)?.heading}
-              />
-            ))}
+            {sortedFrames.map((frame) => {
+              const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
+              return (
+                <SortableFrameCard
+                  key={frame.id}
+                  frame={frame}
+                  onUpdate={onUpdateFrame}
+                  onDelete={onDeleteFrame}
+                  onGenerate={generateImage}
+                  sceneHeading={getSceneForFrame(frame)?.heading}
+                  sceneNumber={sceneNumber}
+                  frameInScene={frameInScene}
+                />
+              );
+            })}
           </div>
         </SortableContext>
       </DndContext>

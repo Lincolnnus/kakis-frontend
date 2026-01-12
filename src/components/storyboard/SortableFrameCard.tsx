@@ -10,9 +10,11 @@ interface SortableFrameCardProps {
   onDelete: (id: string) => void;
   onGenerate: (id: string, prompt: string, style: FrameStyle) => Promise<void>;
   sceneHeading?: string;
+  sceneNumber?: number;
+  frameInScene?: number;
 }
 
-export function SortableFrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading }: SortableFrameCardProps) {
+export function SortableFrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading, sceneNumber, frameInScene }: SortableFrameCardProps) {
   const {
     attributes,
     listeners,
@@ -47,6 +49,8 @@ export function SortableFrameCard({ frame, onUpdate, onDelete, onGenerate, scene
         onDelete={onDelete}
         onGenerate={onGenerate}
         sceneHeading={sceneHeading}
+        sceneNumber={sceneNumber}
+        frameInScene={frameInScene}
       />
     </div>
   );
