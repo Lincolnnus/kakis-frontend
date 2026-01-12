@@ -1,0 +1,238 @@
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { 
+  Music, 
+  Play, 
+  Pause, 
+  Volume2,
+  Sparkles,
+  RefreshCw,
+  Check
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface ThemeMusicSectionProps {
+  projectId: string;
+}
+
+const MOOD_OPTIONS = [
+  { id: 'dramatic', label: 'Dramatic', color: 'bg-red-500/10 text-red-600 border-red-500/30' },
+  { id: 'mysterious', label: 'Mysterious', color: 'bg-purple-500/10 text-purple-600 border-purple-500/30' },
+  { id: 'romantic', label: 'Romantic', color: 'bg-pink-500/10 text-pink-600 border-pink-500/30' },
+  { id: 'action', label: 'Action', color: 'bg-orange-500/10 text-orange-600 border-orange-500/30' },
+  { id: 'comedy', label: 'Comedy', color: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/30' },
+  { id: 'horror', label: 'Horror', color: 'bg-slate-500/10 text-slate-600 border-slate-500/30' },
+  { id: 'inspirational', label: 'Inspirational', color: 'bg-blue-500/10 text-blue-600 border-blue-500/30' },
+  { id: 'melancholic', label: 'Melancholic', color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/30' },
+];
+
+const GENRE_OPTIONS = [
+  { id: 'orchestral', label: 'Orchestral' },
+  { id: 'electronic', label: 'Electronic' },
+  { id: 'acoustic', label: 'Acoustic' },
+  { id: 'ambient', label: 'Ambient' },
+  { id: 'jazz', label: 'Jazz' },
+  { id: 'rock', label: 'Rock' },
+  { id: 'folk', label: 'Folk' },
+  { id: 'cinematic', label: 'Cinematic' },
+];
+
+export function ThemeMusicSection({ projectId }: ThemeMusicSectionProps) {
+  const [selectedMood, setSelectedMood] = useState<string>('dramatic');
+  const [selectedGenre, setSelectedGenre] = useState<string>('cinematic');
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [volume, setVolume] = useState([70]);
+  const [hasGenerated, setHasGenerated] = useState(false);
+
+  const handleGenerate = () => {
+    setIsGenerating(true);
+    // Mock generation
+    setTimeout(() => {
+      setIsGenerating(false);
+      setHasGenerated(true);
+    }, 2000);
+  };
+
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Music className="h-5 w-5" />
+          Theme & Background Music
+        </CardTitle>
+        <CardDescription>
+          Set the mood and preview AI-generated background music for your project
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Mood Selection */}
+        <div className="space-y-3">
+          <Label>Project Mood</Label>
+          <div className="flex flex-wrap gap-2">
+            {MOOD_OPTIONS.map((mood) => (
+              <button
+                key={mood.id}
+                onClick={() => setSelectedMood(mood.id)}
+                className={cn(
+                  'rounded-full border px-3 py-1.5 text-sm font-medium transition-all',
+                  mood.color,
+                  selectedMood === mood.id 
+                    ? 'ring-2 ring-primary ring-offset-2' 
+                    : 'opacity-70 hover:opacity-100'
+                )}
+              >
+                {selectedMood === mood.id && (
+                  <Check className="mr-1 inline h-3 w-3" />
+                )}
+                {mood.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Genre Selection */}
+        <div className="space-y-3">
+          <Label>Music Genre</Label>
+          <div className="flex flex-wrap gap-2">
+            {GENRE_OPTIONS.map((genre) => (
+              <Badge
+                key={genre.id}
+                variant={selectedGenre === genre.id ? 'default' : 'outline'}
+                className={cn(
+                  'cursor-pointer transition-all',
+                  selectedGenre === genre.id 
+                    ? '' 
+                    : 'hover:bg-primary/10'
+                )}
+                onClick={() => setSelectedGenre(genre.id)}
+              >
+                {genre.label}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {/* Custom Prompt */}
+        <div className="space-y-2">
+          <Label>Custom Music Description (Optional)</Label>
+          <Textarea
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            placeholder="Describe additional details for the music... e.g., 'slow build-up with strings, rising tension'"
+            className="resize-none"
+            rows={2}
+          />
+        </div>
+
+        {/* Preview Player */}
+        <div className="rounded-lg border bg-muted/30 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                size="icon"
+                variant={hasGenerated ? 'default' : 'secondary'}
+                onClick={togglePlay}
+                disabled={!hasGenerated}
+              >
+                {isPlaying ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
+              </Button>
+              <div>
+                <p className="text-sm font-medium">
+                  {hasGenerated 
+                    ? `${MOOD_OPTIONS.find(m => m.id === selectedMood)?.label} ${GENRE_OPTIONS.find(g => g.id === selectedGenre)?.label} Theme`
+                    : 'No preview generated'
+                  }
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {hasGenerated ? '0:30 • AI Generated' : 'Generate to preview'}
+                </p>
+              </div>
+            </div>
+            
+            {/* Volume Control */}
+            <div className="flex items-center gap-2">
+              <Volume2 className="h-4 w-4 text-muted-foreground" />
+              <Slider
+                value={volume}
+                onValueChange={setVolume}
+                max={100}
+                step={1}
+                className="w-24"
+              />
+            </div>
+          </div>
+
+          {/* Progress Bar (mock) */}
+          {hasGenerated && (
+            <div className="mt-3">
+              <div className="h-1 w-full rounded-full bg-muted">
+                <div 
+                  className={cn(
+                    'h-full rounded-full bg-primary transition-all',
+                    isPlaying ? 'animate-pulse' : ''
+                  )}
+                  style={{ width: isPlaying ? '45%' : '0%' }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Generate Button */}
+        <div className="flex gap-3">
+          <Button 
+            onClick={handleGenerate} 
+            disabled={isGenerating}
+            className="flex-1"
+          >
+            {isGenerating ? (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : hasGenerated ? (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Regenerate Theme
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" />
+                Generate Preview
+              </>
+            )}
+          </Button>
+          {hasGenerated && (
+            <Button variant="outline">
+              Apply to Project
+            </Button>
+          )}
+        </div>
+
+        {/* Info Note */}
+        <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3">
+          <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
+          <p className="text-sm text-muted-foreground">
+            This theme will be used as the default background music for your animatic. 
+            You can customize music per scene in the Animatic editor.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
