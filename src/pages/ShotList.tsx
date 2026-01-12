@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { ShotListTable } from '@/components/shots/ShotListTable';
+import { ShotGrid } from '@/components/shots/ShotGrid';
 import { Button } from '@/components/ui/button';
 import { useProject } from '@/contexts/ProjectContext';
-import { ArrowLeft, ArrowRight, Layers, Film } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Layers } from 'lucide-react';
 
 export default function ShotList() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -12,6 +12,7 @@ export default function ShotList() {
     projects, 
     scenes, 
     shots,
+    frames,
     setCurrentProject,
     addShot,
     updateShot,
@@ -21,6 +22,9 @@ export default function ShotList() {
   const project = projects.find(p => p.id === projectId);
   const projectScenes = scenes.filter(s => s.projectId === projectId);
   const projectShots = shots.filter(s => s.projectId === projectId);
+  const projectFrames = frames.filter(f => 
+    projectScenes.some(s => s.id === f.sceneId)
+  );
 
   useEffect(() => {
     if (project) {
@@ -53,7 +57,7 @@ export default function ShotList() {
             </Link>
             <h1 className="text-2xl font-bold">{project.title} — Shot List</h1>
             <p className="text-muted-foreground">
-              {projectShots.length} shots • {projectScenes.length} scenes
+              {projectShots.length} shots • {projectScenes.length} scenes • Visual editor with audio
             </p>
           </div>
 
@@ -73,9 +77,10 @@ export default function ShotList() {
           </div>
         </div>
 
-        {/* Shot List Table */}
-        <ShotListTable
+        {/* Shot Grid */}
+        <ShotGrid
           shots={projectShots}
+          frames={projectFrames}
           projectId={projectId!}
           sceneIds={projectScenes.map(s => s.id)}
           onAddShot={addShot}
