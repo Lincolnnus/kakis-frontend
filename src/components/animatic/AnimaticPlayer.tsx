@@ -49,7 +49,48 @@ interface AudioTrack {
   type: 'dialogue' | 'music' | 'sfx';
   volume: number;
   muted: boolean;
+  isGenerated: boolean;
+  duration?: number;
+  waveform?: number[];
 }
+
+interface FrameAudio {
+  frameId: string;
+  dialogue?: { text: string; voice: string; duration: number };
+  sfx?: { name: string; duration: number }[];
+}
+
+// Sample waveform data for visualization
+const generateWaveform = (length: number): number[] => 
+  Array.from({ length }, () => Math.random() * 0.8 + 0.2);
+
+// Sample audio data for frames
+const SAMPLE_FRAME_AUDIO: Record<string, FrameAudio> = {
+  'frame-1': {
+    frameId: 'frame-1',
+    dialogue: { text: "Luna gazes up at the night sky...", voice: 'Sarah', duration: 3.2 },
+    sfx: [{ name: 'Crickets chirping', duration: 2.0 }, { name: 'Gentle breeze', duration: 1.5 }]
+  },
+  'frame-2': {
+    frameId: 'frame-2', 
+    dialogue: { text: "The stars twinkle brighter than ever before.", voice: 'Sarah', duration: 2.8 },
+    sfx: [{ name: 'Magical shimmer', duration: 1.0 }]
+  },
+  'frame-3': {
+    frameId: 'frame-3',
+    dialogue: { text: "Something catches her eye in the distance.", voice: 'Sarah', duration: 2.5 },
+    sfx: [{ name: 'Owl hooting', duration: 1.2 }, { name: 'Leaves rustling', duration: 2.0 }]
+  },
+  'frame-4': {
+    frameId: 'frame-4',
+    dialogue: { text: "A shooting star streaks across the sky!", voice: 'Narrator', duration: 2.0 },
+    sfx: [{ name: 'Whoosh', duration: 0.8 }, { name: 'Sparkling trail', duration: 1.5 }]
+  },
+  'frame-5': {
+    frameId: 'frame-5',
+    sfx: [{ name: 'Footsteps on grass', duration: 1.5 }]
+  },
+};
 
 export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -63,14 +104,18 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   const [isLooping, setIsLooping] = useState(true);
   const [activeTransition, setActiveTransition] = useState<TransitionType>('cut');
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isGeneratingDialogue, setIsGeneratingDialogue] = useState(false);
+  const [isGeneratingMusic, setIsGeneratingMusic] = useState(false);
+  const [isGeneratingSFX, setIsGeneratingSFX] = useState(false);
+  const [frameAudioData, setFrameAudioData] = useState<Record<string, FrameAudio>>({});
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
-  // Audio tracks state
+  // Audio tracks state with sample generated data
   const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([
-    { id: 'dialogue', name: 'Dialogue', type: 'dialogue', volume: 100, muted: false },
-    { id: 'music', name: 'Background Music', type: 'music', volume: 60, muted: false },
-    { id: 'sfx', name: 'Sound Effects', type: 'sfx', volume: 80, muted: false },
+    { id: 'dialogue', name: 'Dialogue', type: 'dialogue', volume: 100, muted: false, isGenerated: false, waveform: generateWaveform(50) },
+    { id: 'music', name: 'Background Music', type: 'music', volume: 60, muted: false, isGenerated: false, duration: 45, waveform: generateWaveform(80) },
+    { id: 'sfx', name: 'Sound Effects', type: 'sfx', volume: 80, muted: false, isGenerated: false, waveform: generateWaveform(60) },
   ]);
 
   // Music settings
@@ -169,43 +214,77 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   };
 
   const handleGenerateDialogue = () => {
+    setIsGeneratingDialogue(true);
     toast({
       title: 'Generating dialogue...',
       description: 'Using AI to create voiceover from frame text',
     });
     setTimeout(() => {
+      // Simulate loading sample dialogue data
+      setFrameAudioData(prev => ({
+        ...prev,
+        ...SAMPLE_FRAME_AUDIO
+      }));
+      setAudioTracks(tracks => 
+        tracks.map(t => t.id === 'dialogue' ? { ...t, isGenerated: true, duration: 12.5 } : t)
+      );
+      setIsGeneratingDialogue(false);
       toast({
         title: 'Dialogue generated!',
-        description: `Created voiceover for ${sortedFrames.filter(f => f.dialogue).length} frames`,
+        description: `Created voiceover for ${Object.values(SAMPLE_FRAME_AUDIO).filter(f => f.dialogue).length} frames with sample AI voices`,
       });
     }, 2000);
   };
 
   const handleGenerateMusic = () => {
+    setIsGeneratingMusic(true);
     toast({
       title: 'Generating music...',
       description: `Creating ${musicMood} background track`,
     });
     setTimeout(() => {
+      setAudioTracks(tracks => 
+        tracks.map(t => t.id === 'music' ? { 
+          ...t, 
+          isGenerated: true, 
+          duration: totalDuration,
+          name: `${musicMood.charAt(0).toUpperCase() + musicMood.slice(1)} Theme`,
+          waveform: generateWaveform(100)
+        } : t)
+      );
+      setIsGeneratingMusic(false);
       toast({
         title: 'Music generated!',
-        description: 'Background music track is ready',
+        description: `${musicMood.charAt(0).toUpperCase() + musicMood.slice(1)} music track (${formatTime(totalDuration)}) is ready`,
       });
     }, 3000);
   };
 
   const handleGenerateSFX = () => {
+    setIsGeneratingSFX(true);
     toast({
       title: 'Generating sound effects...',
       description: 'Analyzing scenes for ambient sounds',
     });
     setTimeout(() => {
+      // Add SFX data to frames
+      setFrameAudioData(prev => ({
+        ...prev,
+        ...SAMPLE_FRAME_AUDIO
+      }));
+      setAudioTracks(tracks => 
+        tracks.map(t => t.id === 'sfx' ? { ...t, isGenerated: true, duration: totalDuration } : t)
+      );
+      setIsGeneratingSFX(false);
       toast({
         title: 'SFX generated!',
-        description: `Created sound effects for ${sortedFrames.length} frames`,
+        description: `Created ${Object.values(SAMPLE_FRAME_AUDIO).reduce((acc, f) => acc + (f.sfx?.length || 0), 0)} sound effects for scenes`,
       });
     }, 2500);
   };
+
+  // Get current frame audio data
+  const currentFrameAudio = currentFrame ? frameAudioData[currentFrame.id] : null;
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -278,12 +357,28 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
         {/* Frame Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
           <div className="flex items-end justify-between">
-            <div>
+            <div className="flex-1">
               <p className="text-sm font-medium text-white">
                 Frame {currentFrame?.frameNumber} of {sortedFrames.length}
               </p>
-              {currentFrame?.dialogue && (
-                <p className="mt-1 text-sm text-white/80">"{currentFrame.dialogue}"</p>
+              {currentFrameAudio?.dialogue && (
+                <div className="mt-2 flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-primary/20 text-primary-foreground">
+                    <Mic className="mr-1 h-3 w-3" />
+                    {currentFrameAudio.dialogue.voice}
+                  </Badge>
+                  <p className="text-sm text-white/90 italic">"{currentFrameAudio.dialogue.text}"</p>
+                </div>
+              )}
+              {currentFrameAudio?.sfx && currentFrameAudio.sfx.length > 0 && (
+                <div className="mt-1 flex flex-wrap gap-1">
+                  {currentFrameAudio.sfx.map((sfx, i) => (
+                    <Badge key={i} variant="outline" className="bg-emerald-500/20 text-emerald-100 border-emerald-500/30 text-xs">
+                      <Volume2 className="mr-1 h-2 w-2" />
+                      {sfx.name}
+                    </Badge>
+                  ))}
+                </div>
               )}
             </div>
             <div className="text-right text-sm text-white/60">
@@ -504,7 +599,9 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
             {audioTracks.map((track) => (
               <div 
                 key={track.id}
-                className="flex items-center gap-4 rounded-lg border bg-muted/30 p-3"
+                className={`flex items-center gap-4 rounded-lg border p-3 transition-colors ${
+                  track.isGenerated ? 'bg-accent/50 border-primary/20' : 'bg-muted/30'
+                }`}
               >
                 <Button 
                   size="icon" 
@@ -525,9 +622,39 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
                 
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">{track.name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{track.name}</span>
+                      {track.isGenerated && (
+                        <Badge variant="secondary" className="text-xs">
+                          <Sparkles className="mr-1 h-2 w-2" />
+                          AI Generated
+                        </Badge>
+                      )}
+                      {track.duration && (
+                        <span className="text-xs text-muted-foreground">
+                          {formatTime(track.duration)}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs text-muted-foreground">{track.volume}%</span>
                   </div>
+                  
+                  {/* Waveform visualization */}
+                  {track.isGenerated && track.waveform && (
+                    <div className="mb-2 flex items-end gap-px h-8 bg-muted/50 rounded overflow-hidden">
+                      {track.waveform.map((level, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 rounded-t transition-all ${
+                            track.type === 'dialogue' ? 'bg-primary/60' :
+                            track.type === 'music' ? 'bg-amber-500/60' : 'bg-emerald-500/60'
+                          } ${track.muted ? 'opacity-30' : ''}`}
+                          style={{ height: `${level * 100}%` }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  
                   <Slider
                     value={[track.muted ? 0 : track.volume]}
                     max={100}
@@ -542,23 +669,70 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
               </div>
             ))}
           </div>
+
+          {/* Generated Audio Summary */}
+          {Object.keys(frameAudioData).length > 0 && (
+            <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3">
+              <h5 className="text-sm font-medium mb-2 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                Generated Audio Summary
+              </h5>
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Dialogue Clips</p>
+                  <p className="font-medium">{Object.values(frameAudioData).filter(f => f.dialogue).length}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Sound Effects</p>
+                  <p className="font-medium">{Object.values(frameAudioData).reduce((acc, f) => acc + (f.sfx?.length || 0), 0)}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Total Duration</p>
+                  <p className="font-medium">{formatTime(totalDuration)}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="music" className="p-4 space-y-6">
           {/* Dialogue Generation */}
-          <div className="space-y-3">
+          <div className="space-y-3 rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Mic className="h-4 w-4 text-primary" />
                 <h4 className="font-medium">AI Dialogue</h4>
               </div>
-              <Badge variant="secondary">
-                {sortedFrames.filter(f => f.dialogue).length} frames with dialogue
-              </Badge>
+              <div className="flex items-center gap-2">
+                {audioTracks.find(t => t.id === 'dialogue')?.isGenerated && (
+                  <Badge className="bg-primary/20 text-primary">
+                    <Sparkles className="mr-1 h-3 w-3" />
+                    Generated
+                  </Badge>
+                )}
+                <Badge variant="secondary">
+                  {sortedFrames.filter(f => f.dialogue).length} frames with dialogue
+                </Badge>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground">
               Generate voiceover from character dialogue in your frames
             </p>
+            
+            {/* Show generated dialogue samples */}
+            {audioTracks.find(t => t.id === 'dialogue')?.isGenerated && (
+              <div className="space-y-2 rounded-md bg-muted/50 p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Sample Dialogue</p>
+                {Object.values(frameAudioData).filter(f => f.dialogue).slice(0, 3).map((frame, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <Badge variant="outline" className="shrink-0">{frame.dialogue?.voice}</Badge>
+                    <span className="text-muted-foreground italic">"{frame.dialogue?.text}"</span>
+                    <span className="text-xs text-muted-foreground ml-auto">{frame.dialogue?.duration}s</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             <div className="flex gap-2">
               <Select defaultValue="sarah">
                 <SelectTrigger className="w-40">
@@ -571,22 +745,63 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
                   <SelectItem value="custom">Custom Voice</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={handleGenerateDialogue} className="gradient-primary">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Generate Dialogue
+              <Button 
+                onClick={handleGenerateDialogue} 
+                className="gradient-primary"
+                disabled={isGeneratingDialogue}
+              >
+                {isGeneratingDialogue ? (
+                  <>
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    {audioTracks.find(t => t.id === 'dialogue')?.isGenerated ? 'Regenerate' : 'Generate'} Dialogue
+                  </>
+                )}
               </Button>
             </div>
           </div>
 
           {/* Music Generation */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Music className="h-4 w-4 text-amber-500" />
-              <h4 className="font-medium">AI Background Music</h4>
+          <div className="space-y-3 rounded-lg border p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Music className="h-4 w-4 text-amber-500" />
+                <h4 className="font-medium">AI Background Music</h4>
+              </div>
+              {audioTracks.find(t => t.id === 'music')?.isGenerated && (
+                <Badge className="bg-amber-500/20 text-amber-600">
+                  <Sparkles className="mr-1 h-3 w-3" />
+                  Generated
+                </Badge>
+              )}
             </div>
             <p className="text-sm text-muted-foreground">
               Generate a custom music track for your animatic
             </p>
+            
+            {/* Show generated music info */}
+            {audioTracks.find(t => t.id === 'music')?.isGenerated && (
+              <div className="rounded-md bg-amber-500/10 border border-amber-500/20 p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-sm">{audioTracks.find(t => t.id === 'music')?.name}</span>
+                  <span className="text-xs text-muted-foreground">{formatTime(totalDuration)}</span>
+                </div>
+                <div className="flex items-end gap-px h-8">
+                  {audioTracks.find(t => t.id === 'music')?.waveform?.map((level, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-amber-500/50 rounded-t"
+                      style={{ height: `${level * 100}%` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label className="text-xs">Mood</Label>
@@ -614,24 +829,78 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
                 />
               </div>
             </div>
-            <Button onClick={handleGenerateMusic} variant="outline">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Generate Music Track
+            <Button 
+              onClick={handleGenerateMusic} 
+              variant="outline"
+              disabled={isGeneratingMusic}
+            >
+              {isGeneratingMusic ? (
+                <>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {audioTracks.find(t => t.id === 'music')?.isGenerated ? 'Regenerate' : 'Generate'} Music Track
+                </>
+              )}
             </Button>
           </div>
 
           {/* SFX Generation */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Volume2 className="h-4 w-4 text-emerald-500" />
-              <h4 className="font-medium">AI Sound Effects</h4>
+          <div className="space-y-3 rounded-lg border p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Volume2 className="h-4 w-4 text-emerald-500" />
+                <h4 className="font-medium">AI Sound Effects</h4>
+              </div>
+              {audioTracks.find(t => t.id === 'sfx')?.isGenerated && (
+                <Badge className="bg-emerald-500/20 text-emerald-600">
+                  <Sparkles className="mr-1 h-3 w-3" />
+                  Generated
+                </Badge>
+              )}
             </div>
             <p className="text-sm text-muted-foreground">
               Auto-generate sound effects based on scene descriptions
             </p>
-            <Button onClick={handleGenerateSFX} variant="outline">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Generate SFX from Scenes
+            
+            {/* Show generated SFX list */}
+            {audioTracks.find(t => t.id === 'sfx')?.isGenerated && (
+              <div className="rounded-md bg-emerald-500/10 border border-emerald-500/20 p-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Generated Effects</p>
+                <div className="flex flex-wrap gap-1">
+                  {Object.values(frameAudioData).flatMap(f => f.sfx || []).slice(0, 8).map((sfx, i) => (
+                    <Badge key={i} variant="outline" className="bg-emerald-500/10 border-emerald-500/30">
+                      {sfx.name}
+                    </Badge>
+                  ))}
+                  {Object.values(frameAudioData).flatMap(f => f.sfx || []).length > 8 && (
+                    <Badge variant="secondary">
+                      +{Object.values(frameAudioData).flatMap(f => f.sfx || []).length - 8} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            <Button 
+              onClick={handleGenerateSFX} 
+              variant="outline"
+              disabled={isGeneratingSFX}
+            >
+              {isGeneratingSFX ? (
+                <>
+                  <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {audioTracks.find(t => t.id === 'sfx')?.isGenerated ? 'Regenerate' : 'Generate'} SFX from Scenes
+                </>
+              )}
             </Button>
           </div>
         </TabsContent>
