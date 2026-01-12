@@ -1,35 +1,36 @@
 import { useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { Shot, CameraAngle, CameraMovement, Framing } from '@/types';
+import { SortableShotRow } from './SortableShotRow';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   Plus, 
-  Trash2, 
   Wand2, 
   Download, 
   ListChecks,
-  GripVertical,
-  Check,
-  X,
-  Edit2
 } from 'lucide-react';
-import { generateId } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
 
 interface ShotListTableProps {
@@ -84,13 +85,43 @@ export function ShotListTable({
   onUpdateShot,
   onDeleteShot,
 }: ShotListTableProps) {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedShot, setEditedShot] = useState<Shot | null>(null);
   const { toast } = useToast();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const sortedShots = [...shots]
     .filter(s => s.projectId === projectId)
     .sort((a, b) => a.shotNumber - b.shotNumber);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = sortedShots.findIndex((s) => s.id === active.id);
+      const newIndex = sortedShots.findIndex((s) => s.id === over.id);
+
+      const newOrder = arrayMove(sortedShots, oldIndex, newIndex);
+      
+      // Update shot numbers
+      newOrder.forEach((shot, index) => {
+        onUpdateShot(shot.id, { shotNumber: index + 1 });
+      });
+
+      toast({
+        title: 'Shots reordered',
+        description: `Moved shot ${oldIndex + 1} to position ${newIndex + 1}`,
+      });
+    }
+  };
 
   const handleAddShot = () => {
     const newShot: Omit<Shot, 'id'> = {
@@ -134,26 +165,26 @@ export function ShotListTable({
     });
   };
 
-  const startEditing = (shot: Shot) => {
-    setEditingId(shot.id);
-    setEditedShot({ ...shot });
-  };
-
-  const saveEdit = () => {
-    if (editedShot) {
-      onUpdateShot(editedShot.id, editedShot);
-      setEditingId(null);
-      setEditedShot(null);
-    }
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditedShot(null);
-  };
-
-  const formatLabel = (value: string) => {
-    return value.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const handleExportCSV = () => {
+    const headers = ['Shot #', 'Framing', 'Camera Angle', 'Lens', 'Movement', 'Notes'];
+    const rows = sortedShots.map(s => [
+      s.shotNumber,
+      s.framing,
+      s.cameraAngle,
+      s.lensType,
+      s.cameraMovement,
+      s.notes
+    ]);
+    
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'shot-list.csv';
+    a.click();
+    
+    toast({ title: 'Exported!', description: 'Shot list downloaded as CSV.' });
   };
 
   if (sortedShots.length === 0) {
@@ -189,13 +220,14 @@ export function ShotListTable({
         <div className="flex items-center gap-2">
           <ListChecks className="h-5 w-5 text-primary" />
           <span className="font-medium">{sortedShots.length} Shots</span>
+          <span className="text-sm text-muted-foreground">• Drag to reorder</span>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleAutoGenerate}>
             <Wand2 className="mr-2 h-4 w-4" />
             Auto-Generate
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportCSV}>
             <Download className="mr-2 h-4 w-4" />
             Export CSV
           </Button>
@@ -206,140 +238,47 @@ export function ShotListTable({
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table with Drag and Drop */}
       <div className="rounded-lg border bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12"></TableHead>
-              <TableHead className="w-16">Shot #</TableHead>
-              <TableHead>Framing</TableHead>
-              <TableHead>Camera Angle</TableHead>
-              <TableHead>Lens</TableHead>
-              <TableHead>Movement</TableHead>
-              <TableHead>Notes</TableHead>
-              <TableHead className="w-24">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedShots.map((shot) => (
-              <TableRow key={shot.id}>
-                <TableCell>
-                  <GripVertical className="h-4 w-4 cursor-grab text-muted-foreground" />
-                </TableCell>
-                <TableCell className="font-mono font-medium">{shot.shotNumber}</TableCell>
-                
-                {editingId === shot.id && editedShot ? (
-                  <>
-                    <TableCell>
-                      <Select
-                        value={editedShot.framing}
-                        onValueChange={(v: Framing) => setEditedShot({ ...editedShot, framing: v })}
-                      >
-                        <SelectTrigger className="h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {FRAMINGS.map((f) => (
-                            <SelectItem key={f} value={f}>{formatLabel(f)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={editedShot.cameraAngle}
-                        onValueChange={(v: CameraAngle) => setEditedShot({ ...editedShot, cameraAngle: v })}
-                      >
-                        <SelectTrigger className="h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CAMERA_ANGLES.map((a) => (
-                            <SelectItem key={a} value={a}>{formatLabel(a)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={editedShot.lensType}
-                        onValueChange={(v) => setEditedShot({ ...editedShot, lensType: v })}
-                      >
-                        <SelectTrigger className="h-8 w-20">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {LENS_TYPES.map((l) => (
-                            <SelectItem key={l} value={l}>{l}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={editedShot.cameraMovement}
-                        onValueChange={(v: CameraMovement) => setEditedShot({ ...editedShot, cameraMovement: v })}
-                      >
-                        <SelectTrigger className="h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {CAMERA_MOVEMENTS.map((m) => (
-                            <SelectItem key={m} value={m}>{formatLabel(m)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={editedShot.notes}
-                        onChange={(e) => setEditedShot({ ...editedShot, notes: e.target.value })}
-                        className="h-8"
-                        placeholder="Notes..."
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={saveEdit}>
-                          <Check className="h-4 w-4 text-green-600" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={cancelEdit}>
-                          <X className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </>
-                ) : (
-                  <>
-                    <TableCell>{formatLabel(shot.framing)}</TableCell>
-                    <TableCell>{formatLabel(shot.cameraAngle)}</TableCell>
-                    <TableCell>{shot.lensType}</TableCell>
-                    <TableCell>{formatLabel(shot.cameraMovement)}</TableCell>
-                    <TableCell className="max-w-[200px] truncate text-muted-foreground">
-                      {shot.notes || '—'}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => startEditing(shot)}>
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="icon" 
-                          variant="ghost" 
-                          className="h-8 w-8 text-destructive" 
-                          onClick={() => onDeleteShot(shot.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </>
-                )}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12"></TableHead>
+                <TableHead className="w-16">Shot #</TableHead>
+                <TableHead>Framing</TableHead>
+                <TableHead>Camera Angle</TableHead>
+                <TableHead>Lens</TableHead>
+                <TableHead>Movement</TableHead>
+                <TableHead>Notes</TableHead>
+                <TableHead className="w-24">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              <SortableContext
+                items={sortedShots.map(s => s.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {sortedShots.map((shot) => (
+                  <SortableShotRow
+                    key={shot.id}
+                    shot={shot}
+                    onUpdate={onUpdateShot}
+                    onDelete={onDeleteShot}
+                    cameraAngles={CAMERA_ANGLES}
+                    cameraMovements={CAMERA_MOVEMENTS}
+                    framings={FRAMINGS}
+                    lensTypes={LENS_TYPES}
+                  />
+                ))}
+              </SortableContext>
+            </TableBody>
+          </Table>
+        </DndContext>
       </div>
     </div>
   );

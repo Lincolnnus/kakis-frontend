@@ -1,6 +1,22 @@
 import { useState } from 'react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { StoryboardFrame, FrameStyle, Scene } from '@/types';
-import { FrameCard } from './FrameCard';
+import { SortableFrameCard } from './SortableFrameCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -19,7 +35,6 @@ import {
   Layers,
   Download
 } from 'lucide-react';
-import { generateId } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
 
 interface StoryboardCanvasProps {
@@ -29,6 +44,7 @@ interface StoryboardCanvasProps {
   onAddFrame: (frame: Omit<StoryboardFrame, 'id'>) => void;
   onUpdateFrame: (id: string, updates: Partial<StoryboardFrame>) => void;
   onDeleteFrame: (id: string) => void;
+  onReorderFrames?: (frameIds: string[]) => void;
 }
 
 // Mock image URLs for demo (placeholder images)
@@ -47,14 +63,51 @@ export function StoryboardCanvas({
   projectId, 
   onAddFrame, 
   onUpdateFrame, 
-  onDeleteFrame 
+  onDeleteFrame,
+  onReorderFrames
 }: StoryboardCanvasProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [globalStyle, setGlobalStyle] = useState<FrameStyle>('illustrated');
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
   const { toast } = useToast();
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const sortedFrames = [...frames].sort((a, b) => a.frameNumber - b.frameNumber);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = sortedFrames.findIndex((f) => f.id === active.id);
+      const newIndex = sortedFrames.findIndex((f) => f.id === over.id);
+
+      const newOrder = arrayMove(sortedFrames, oldIndex, newIndex);
+      
+      // Update frame numbers
+      newOrder.forEach((frame, index) => {
+        onUpdateFrame(frame.id, { frameNumber: index + 1 });
+      });
+
+      if (onReorderFrames) {
+        onReorderFrames(newOrder.map(f => f.id));
+      }
+
+      toast({
+        title: 'Frames reordered',
+        description: `Moved frame ${oldIndex + 1} to position ${newIndex + 1}`,
+      });
+    }
+  };
 
   // Mock image generation
   const generateImage = async (frameId: string, _prompt: string, _style: FrameStyle): Promise<void> => {
@@ -239,28 +292,39 @@ export function StoryboardCanvas({
         </div>
       </div>
 
-      {/* Frames Grid/List */}
-      <div className={
-        viewMode === 'grid'
-          ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-          : 'space-y-4'
-      }>
-        {sortedFrames.map((frame) => (
-          <FrameCard
-            key={frame.id}
-            frame={frame}
-            onUpdate={onUpdateFrame}
-            onDelete={onDeleteFrame}
-            onGenerate={generateImage}
-            sceneHeading={getSceneForFrame(frame)?.heading}
-          />
-        ))}
-      </div>
+      {/* Frames Grid/List with Drag and Drop */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={sortedFrames.map(f => f.id)}
+          strategy={viewMode === 'grid' ? rectSortingStrategy : verticalListSortingStrategy}
+        >
+          <div className={
+            viewMode === 'grid'
+              ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'space-y-4'
+          }>
+            {sortedFrames.map((frame) => (
+              <SortableFrameCard
+                key={frame.id}
+                frame={frame}
+                onUpdate={onUpdateFrame}
+                onDelete={onDeleteFrame}
+                onGenerate={generateImage}
+                sceneHeading={getSceneForFrame(frame)?.heading}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
 
       {/* Summary */}
       <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4 text-sm">
         <span className="text-muted-foreground">
-          {sortedFrames.length} frames • {sortedFrames.filter(f => f.imageUrl).length} generated
+          {sortedFrames.length} frames • {sortedFrames.filter(f => f.imageUrl).length} generated • Drag to reorder
         </span>
         <Button variant="outline" size="sm">
           <Download className="mr-2 h-4 w-4" />
