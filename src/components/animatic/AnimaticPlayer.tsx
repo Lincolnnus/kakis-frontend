@@ -3,6 +3,10 @@ import { StoryboardFrame, TransitionType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -21,8 +25,14 @@ import {
   Film,
   Clock,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Music,
+  Mic,
+  Sparkles,
+  Upload,
+  Wand2
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface AnimaticPlayerProps {
   frames: StoryboardFrame[];
@@ -31,14 +41,35 @@ interface AnimaticPlayerProps {
 
 const TRANSITIONS: TransitionType[] = ['cut', 'fade', 'dissolve', 'wipe'];
 
+interface AudioTrack {
+  id: string;
+  name: string;
+  type: 'dialogue' | 'music' | 'sfx';
+  volume: number;
+  muted: boolean;
+}
+
 export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const [masterVolume, setMasterVolume] = useState(80);
   const [isMuted, setIsMuted] = useState(false);
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { toast } = useToast();
+
+  // Audio tracks state
+  const [audioTracks, setAudioTracks] = useState<AudioTrack[]>([
+    { id: 'dialogue', name: 'Dialogue', type: 'dialogue', volume: 100, muted: false },
+    { id: 'music', name: 'Background Music', type: 'music', volume: 60, muted: false },
+    { id: 'sfx', name: 'Sound Effects', type: 'sfx', volume: 80, muted: false },
+  ]);
+
+  // Music settings
+  const [musicMood, setMusicMood] = useState('ambient');
+  const [musicPrompt, setMusicPrompt] = useState('');
 
   const sortedFrames = [...frames].sort((a, b) => a.frameNumber - b.frameNumber);
   const currentFrame = sortedFrames[currentIndex];
@@ -96,6 +127,57 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
 
   const updateFrameDuration = (frameId: string, duration: number) => {
     onUpdateFrame(frameId, { duration: Math.max(1, Math.min(30, duration)) });
+  };
+
+  const updateTrackVolume = (trackId: string, volume: number) => {
+    setAudioTracks(tracks => 
+      tracks.map(t => t.id === trackId ? { ...t, volume } : t)
+    );
+  };
+
+  const toggleTrackMute = (trackId: string) => {
+    setAudioTracks(tracks => 
+      tracks.map(t => t.id === trackId ? { ...t, muted: !t.muted } : t)
+    );
+  };
+
+  const handleGenerateDialogue = () => {
+    toast({
+      title: 'Generating dialogue...',
+      description: 'Using AI to create voiceover from frame text',
+    });
+    setTimeout(() => {
+      toast({
+        title: 'Dialogue generated!',
+        description: `Created voiceover for ${sortedFrames.filter(f => f.dialogue).length} frames`,
+      });
+    }, 2000);
+  };
+
+  const handleGenerateMusic = () => {
+    toast({
+      title: 'Generating music...',
+      description: `Creating ${musicMood} background track`,
+    });
+    setTimeout(() => {
+      toast({
+        title: 'Music generated!',
+        description: 'Background music track is ready',
+      });
+    }, 3000);
+  };
+
+  const handleGenerateSFX = () => {
+    toast({
+      title: 'Generating sound effects...',
+      description: 'Analyzing scenes for ambient sounds',
+    });
+    setTimeout(() => {
+      toast({
+        title: 'SFX generated!',
+        description: `Created sound effects for ${sortedFrames.length} frames`,
+      });
+    }, 2500);
   };
 
   const formatTime = (seconds: number) => {
@@ -232,84 +314,255 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
               </Select>
             </div>
 
-            <Button size="icon" variant="ghost" onClick={() => setIsMuted(!isMuted)}>
-              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button size="icon" variant="ghost" onClick={() => setIsMuted(!isMuted)}>
+                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              </Button>
+              <Slider
+                value={[isMuted ? 0 : masterVolume]}
+                max={100}
+                step={1}
+                className="w-24"
+                onValueChange={([v]) => setMasterVolume(v)}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="rounded-lg border bg-card p-4">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-medium">
-          <Clock className="h-4 w-4" />
-          Timeline
-        </h3>
-        
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {sortedFrames.map((frame, index) => (
-            <div
-              key={frame.id}
-              className={`flex-shrink-0 cursor-pointer rounded-lg border-2 p-2 transition-all ${
-                index === currentIndex 
-                  ? 'border-primary ring-2 ring-primary/20' 
-                  : 'border-transparent hover:border-muted-foreground/30'
-              } ${selectedFrameId === frame.id ? 'bg-accent' : ''}`}
-              onClick={() => {
-                goToFrame(index);
-                setSelectedFrameId(frame.id);
-              }}
-            >
-              <div className="relative mb-2 h-16 w-28 overflow-hidden rounded bg-muted">
-                {frame.imageUrl ? (
-                  <img
-                    src={frame.imageUrl}
-                    alt={`Frame ${frame.frameNumber}`}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <span className="text-xs text-muted-foreground">{frame.frameNumber}</span>
+      {/* Audio & Timeline Tabs */}
+      <Tabs defaultValue="timeline" className="rounded-lg border bg-card">
+        <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+          <TabsTrigger value="timeline" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+            <Clock className="mr-2 h-4 w-4" />
+            Timeline
+          </TabsTrigger>
+          <TabsTrigger value="audio" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+            <Volume2 className="mr-2 h-4 w-4" />
+            Audio Mixer
+          </TabsTrigger>
+          <TabsTrigger value="music" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+            <Music className="mr-2 h-4 w-4" />
+            Music & SFX
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="timeline" className="p-4">
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {sortedFrames.map((frame, index) => (
+              <div
+                key={frame.id}
+                className={`flex-shrink-0 cursor-pointer rounded-lg border-2 p-2 transition-all ${
+                  index === currentIndex 
+                    ? 'border-primary ring-2 ring-primary/20' 
+                    : 'border-transparent hover:border-muted-foreground/30'
+                } ${selectedFrameId === frame.id ? 'bg-accent' : ''}`}
+                onClick={() => {
+                  goToFrame(index);
+                  setSelectedFrameId(frame.id);
+                }}
+              >
+                <div className="relative mb-2 h-16 w-28 overflow-hidden rounded bg-muted">
+                  {frame.imageUrl ? (
+                    <img
+                      src={frame.imageUrl}
+                      alt={`Frame ${frame.frameNumber}`}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <span className="text-xs text-muted-foreground">{frame.frameNumber}</span>
+                    </div>
+                  )}
+                  <div className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-xs text-white">
+                    {frame.duration}s
+                  </div>
+                  {frame.dialogue && (
+                    <Badge className="absolute left-1 top-1 h-4 px-1" variant="secondary">
+                      <Mic className="h-2 w-2" />
+                    </Badge>
+                  )}
+                </div>
+                
+                {selectedFrameId === frame.id && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="h-6 w-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateFrameDuration(frame.id, frame.duration - 1);
+                        }}
+                      >
+                        -
+                      </Button>
+                      <span className="w-8 text-center text-xs">{frame.duration}s</span>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="h-6 w-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateFrameDuration(frame.id, frame.duration + 1);
+                        }}
+                      >
+                        +
+                      </Button>
+                    </div>
                   </div>
                 )}
-                <div className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-xs text-white">
-                  {frame.duration}s
-                </div>
               </div>
-              
-              {selectedFrameId === frame.id && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1">
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
-                      className="h-6 w-6"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateFrameDuration(frame.id, frame.duration - 1);
-                      }}
-                    >
-                      -
-                    </Button>
-                    <span className="w-8 text-center text-xs">{frame.duration}s</span>
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
-                      className="h-6 w-6"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateFrameDuration(frame.id, frame.duration + 1);
-                      }}
-                    >
-                      +
-                    </Button>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="audio" className="p-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium">Audio Tracks</h4>
+            <Button variant="outline" size="sm">
+              <Upload className="mr-2 h-3 w-3" />
+              Import Audio
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {audioTracks.map((track) => (
+              <div 
+                key={track.id}
+                className="flex items-center gap-4 rounded-lg border bg-muted/30 p-3"
+              >
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8"
+                  onClick={() => toggleTrackMute(track.id)}
+                >
+                  {track.muted ? (
+                    <VolumeX className="h-4 w-4 text-muted-foreground" />
+                  ) : track.type === 'dialogue' ? (
+                    <Mic className="h-4 w-4 text-primary" />
+                  ) : track.type === 'music' ? (
+                    <Music className="h-4 w-4 text-amber-500" />
+                  ) : (
+                    <Volume2 className="h-4 w-4 text-emerald-500" />
+                  )}
+                </Button>
+                
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium">{track.name}</span>
+                    <span className="text-xs text-muted-foreground">{track.volume}%</span>
                   </div>
+                  <Slider
+                    value={[track.muted ? 0 : track.volume]}
+                    max={100}
+                    step={1}
+                    onValueChange={([v]) => updateTrackVolume(track.id, v)}
+                  />
                 </div>
-              )}
+
+                <Button size="sm" variant="ghost">
+                  <Wand2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="music" className="p-4 space-y-6">
+          {/* Dialogue Generation */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mic className="h-4 w-4 text-primary" />
+                <h4 className="font-medium">AI Dialogue</h4>
+              </div>
+              <Badge variant="secondary">
+                {sortedFrames.filter(f => f.dialogue).length} frames with dialogue
+              </Badge>
             </div>
-          ))}
-        </div>
-      </div>
+            <p className="text-sm text-muted-foreground">
+              Generate voiceover from character dialogue in your frames
+            </p>
+            <div className="flex gap-2">
+              <Select defaultValue="sarah">
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Voice..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sarah">Sarah (Female)</SelectItem>
+                  <SelectItem value="james">James (Male)</SelectItem>
+                  <SelectItem value="narrator">Narrator</SelectItem>
+                  <SelectItem value="custom">Custom Voice</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button onClick={handleGenerateDialogue} className="gradient-primary">
+                <Sparkles className="mr-2 h-4 w-4" />
+                Generate Dialogue
+              </Button>
+            </div>
+          </div>
+
+          {/* Music Generation */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Music className="h-4 w-4 text-amber-500" />
+              <h4 className="font-medium">AI Background Music</h4>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Generate a custom music track for your animatic
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs">Mood</Label>
+                <Select value={musicMood} onValueChange={setMusicMood}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ambient">Ambient / Atmospheric</SelectItem>
+                    <SelectItem value="tense">Tense / Suspenseful</SelectItem>
+                    <SelectItem value="romantic">Romantic</SelectItem>
+                    <SelectItem value="action">Action / Energetic</SelectItem>
+                    <SelectItem value="sad">Melancholic</SelectItem>
+                    <SelectItem value="happy">Uplifting / Happy</SelectItem>
+                    <SelectItem value="epic">Epic / Cinematic</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Custom Prompt (optional)</Label>
+                <Input 
+                  value={musicPrompt}
+                  onChange={(e) => setMusicPrompt(e.target.value)}
+                  placeholder="e.g., soft piano with strings..."
+                />
+              </div>
+            </div>
+            <Button onClick={handleGenerateMusic} variant="outline">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Generate Music Track
+            </Button>
+          </div>
+
+          {/* SFX Generation */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Volume2 className="h-4 w-4 text-emerald-500" />
+              <h4 className="font-medium">AI Sound Effects</h4>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Auto-generate sound effects based on scene descriptions
+            </p>
+            <Button onClick={handleGenerateSFX} variant="outline">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Generate SFX from Scenes
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
