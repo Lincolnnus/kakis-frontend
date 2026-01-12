@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { StoryboardFrame, TransitionType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,7 +30,9 @@ import {
   Mic,
   Sparkles,
   Upload,
-  Wand2
+  Wand2,
+  Repeat,
+  Shuffle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -52,11 +54,15 @@ interface AudioTrack {
 export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [masterVolume, setMasterVolume] = useState(80);
   const [isMuted, setIsMuted] = useState(false);
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
+  const [isLooping, setIsLooping] = useState(true);
+  const [activeTransition, setActiveTransition] = useState<TransitionType>('cut');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
 
@@ -83,15 +89,33 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
     return (elapsed / totalDuration) * 100;
   }, [currentIndex, sortedFrames, totalDuration]);
 
+  // Transition handling
+  const triggerTransition = useCallback((nextIndex: number) => {
+    if (activeTransition !== 'cut') {
+      setIsTransitioning(true);
+      setPreviousIndex(currentIndex);
+      setTimeout(() => {
+        setCurrentIndex(nextIndex);
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setPreviousIndex(null);
+        }, 300);
+      }, 150);
+    } else {
+      setCurrentIndex(nextIndex);
+    }
+  }, [activeTransition, currentIndex]);
+
   useEffect(() => {
     if (isPlaying && sortedFrames.length > 0) {
       const frameDuration = (currentFrame?.duration || 2) * 1000 / playbackSpeed;
       
       intervalRef.current = setTimeout(() => {
         if (currentIndex < sortedFrames.length - 1) {
-          setCurrentIndex(prev => prev + 1);
+          triggerTransition(currentIndex + 1);
+        } else if (isLooping) {
+          triggerTransition(0);
         } else {
-          setCurrentIndex(0);
           setIsPlaying(false);
         }
       }, frameDuration);
@@ -100,7 +124,7 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
         if (intervalRef.current) clearTimeout(intervalRef.current);
       };
     }
-  }, [isPlaying, currentIndex, sortedFrames, currentFrame, playbackSpeed]);
+  }, [isPlaying, currentIndex, sortedFrames, currentFrame, playbackSpeed, isLooping, triggerTransition]);
 
   useEffect(() => {
     setProgress(calculateProgress());
@@ -109,7 +133,10 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   const togglePlay = () => setIsPlaying(!isPlaying);
 
   const goToFrame = (index: number) => {
-    setCurrentIndex(Math.max(0, Math.min(index, sortedFrames.length - 1)));
+    const targetIndex = Math.max(0, Math.min(index, sortedFrames.length - 1));
+    if (targetIndex !== currentIndex) {
+      triggerTransition(targetIndex);
+    }
   };
 
   const handleProgressClick = (value: number[]) => {
@@ -212,12 +239,30 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
     <div className="space-y-6">
       {/* Main Preview */}
       <div className="relative overflow-hidden rounded-xl border bg-black">
-        <div className="aspect-video w-full">
+        <div className="aspect-video w-full relative">
+          {/* Previous frame for transitions */}
+          {previousIndex !== null && sortedFrames[previousIndex]?.imageUrl && (
+            <img
+              src={sortedFrames[previousIndex].imageUrl}
+              alt={`Frame ${sortedFrames[previousIndex].frameNumber}`}
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${
+                isTransitioning ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          )}
+          
+          {/* Current frame */}
           {currentFrame?.imageUrl ? (
             <img
               src={currentFrame.imageUrl}
               alt={`Frame ${currentFrame.frameNumber}`}
-              className="h-full w-full object-contain"
+              className={`h-full w-full object-contain transition-all duration-300 ${
+                isTransitioning && activeTransition === 'fade' ? 'opacity-0' : 'opacity-100'
+              } ${
+                isTransitioning && activeTransition === 'dissolve' ? 'opacity-50 scale-105' : ''
+              } ${
+                isTransitioning && activeTransition === 'wipe' ? 'translate-x-full' : 'translate-x-0'
+              }`}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-muted">
@@ -296,6 +341,24 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Transition selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Transition:</span>
+              <Select 
+                value={activeTransition} 
+                onValueChange={(v) => setActiveTransition(v as TransitionType)}
+              >
+                <SelectTrigger className="h-8 w-24">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRANSITIONS.map(t => (
+                    <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Speed:</span>
               <Select 
@@ -313,6 +376,16 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Loop toggle */}
+            <Button 
+              size="icon" 
+              variant={isLooping ? 'default' : 'ghost'}
+              onClick={() => setIsLooping(!isLooping)}
+              className={isLooping ? 'gradient-primary' : ''}
+            >
+              <Repeat className="h-4 w-4" />
+            </Button>
 
             <div className="flex items-center gap-2">
               <Button size="icon" variant="ghost" onClick={() => setIsMuted(!isMuted)}>
