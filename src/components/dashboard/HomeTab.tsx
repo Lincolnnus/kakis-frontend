@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProject } from '@/contexts/ProjectContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { ExpandedSceneCard } from './ExpandedSceneCard';
 import {
   Dialog,
   DialogContent,
@@ -41,6 +42,8 @@ interface Message {
 export function HomeTab() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [expandedStory, setExpandedStory] = useState<StoryResponse | null>(null);
+  const [originalPrompt, setOriginalPrompt] = useState('');
+  const [regeneratingScene, setRegeneratingScene] = useState<number | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
@@ -69,6 +72,7 @@ export function HomeTab() {
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setOriginalPrompt(input);
     setIsLoading(true);
     setExpandedStory(null);
 
@@ -158,6 +162,56 @@ export function HomeTab() {
     }
   };
 
+  const handleSceneUpdate = (updatedScene: ExpandedScene) => {
+    if (!expandedStory) return;
+    setExpandedStory({
+      ...expandedStory,
+      scenes: expandedStory.scenes.map(s => 
+        s.sceneNumber === updatedScene.sceneNumber ? updatedScene : s
+      ),
+    });
+    toast({ title: 'Scene updated', description: `Scene ${updatedScene.sceneNumber} has been saved.` });
+  };
+
+  const handleSceneRegenerate = async (sceneNumber: number) => {
+    if (!expandedStory) return;
+    
+    setRegeneratingScene(sceneNumber);
+    const originalScene = expandedStory.scenes.find(s => s.sceneNumber === sceneNumber);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('regenerate-scene', {
+        body: {
+          sceneNumber,
+          originalDescription: originalScene?.description || '',
+          style: selectedStyle,
+          storyContext: originalPrompt,
+        },
+      });
+
+      if (error) throw error;
+
+      const newScene = data as ExpandedScene;
+      setExpandedStory({
+        ...expandedStory,
+        scenes: expandedStory.scenes.map(s => 
+          s.sceneNumber === sceneNumber ? newScene : s
+        ),
+      });
+      
+      toast({ title: 'Scene regenerated!', description: `Scene ${sceneNumber} has been refreshed with a new take.` });
+    } catch (error: any) {
+      console.error('Error regenerating scene:', error);
+      toast({
+        title: 'Error',
+        description: error?.message || 'Failed to regenerate scene.',
+        variant: 'destructive',
+      });
+    } finally {
+      setRegeneratingScene(null);
+    }
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -171,7 +225,7 @@ export function HomeTab() {
     <div className="flex h-[calc(100vh-8rem)] flex-col items-center justify-center">
       {/* Chat Messages - Only show when there's a conversation */}
       {hasConversation && (
-        <div className="mb-6 w-full max-w-3xl flex-1 overflow-y-auto rounded-xl border bg-card/50 p-4">
+        <div className="mb-6 w-full max-w-4xl flex-1 overflow-y-auto rounded-xl border bg-card/50 p-4">
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -188,7 +242,14 @@ export function HomeTab() {
                     ? 'bg-primary text-primary-foreground' 
                     : 'bg-muted'
                 }`}>
-                  <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                  {message.role === 'assistant' && expandedStory ? (
+                    <div className="space-y-3">
+                      <p className="text-sm font-medium">✨ I've expanded your story idea!</p>
+                      <p className="text-sm text-foreground/80">{expandedStory.summary}</p>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                  )}
                 </div>
               </div>
             ))}
@@ -209,23 +270,48 @@ export function HomeTab() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Editable Scene Cards */}
+          {expandedStory && !isLoading && (
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Generated Scenes ({expandedStory.scenes.length})
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Click edit ✏️ to modify or refresh 🔄 to regenerate
+                </p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                {expandedStory.scenes.map((scene) => (
+                  <ExpandedSceneCard
+                    key={scene.sceneNumber}
+                    scene={scene}
+                    onUpdate={handleSceneUpdate}
+                    onRegenerate={handleSceneRegenerate}
+                    isRegenerating={regeneratingScene === scene.sceneNumber}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Create Project Button */}
-          {messages.length > 1 && !isLoading && (
-            <div className="mt-4 flex justify-center">
+          {expandedStory && !isLoading && (
+            <div className="mt-6 flex justify-center">
               <Button 
                 onClick={handleCreateFromScript} 
                 className="gradient-primary"
-                disabled={isCreatingProject}
+                disabled={isCreatingProject || regeneratingScene !== null}
               >
                 {isCreatingProject ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Scenes...
+                    Creating Project...
                   </>
                 ) : (
                   <>
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Create Project & Generate Scenes
+                    Create Project with {expandedStory.scenes.length} Scenes
                   </>
                 )}
               </Button>
