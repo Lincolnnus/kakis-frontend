@@ -1,14 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { StyleSelector } from '@/components/script/StyleSelector';
 import { CharacterLibrary } from '@/components/script/CharacterLibrary';
-import { Send, Sparkles, Settings2, ChevronDown, ChevronUp, Bot, User } from 'lucide-react';
+import { Send, Sparkles, Plus, Users, Palette, Bot, User, Image } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useProject } from '@/contexts/ProjectContext';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface Message {
   id: string;
@@ -18,19 +22,13 @@ interface Message {
 }
 
 export function HomeTab() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hi! I'm your AI storyboard assistant. Paste your script or describe your story idea, and I'll help you break it down into scenes and storyboards. You can also configure your visual style and characters using the settings panel.",
-      timestamp: new Date(),
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState('anime');
   const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
+  const [showStyleDialog, setShowStyleDialog] = useState(false);
+  const [showCharacterDialog, setShowCharacterDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { createProject } = useProject();
@@ -59,7 +57,7 @@ export function HomeTab() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Great! I've analyzed your script. Here's what I found:\n\n📝 **Script Summary:**\n${input.slice(0, 100)}${input.length > 100 ? '...' : ''}\n\n🎨 **Selected Style:** ${selectedStyle}\n👥 **Characters:** ${selectedCharacters.length > 0 ? selectedCharacters.join(', ') : 'None selected'}\n\nWould you like me to create a new project and break this down into scenes? Click the button below to proceed.`,
+        content: `Great! I've analyzed your script. Here's what I found:\n\n📝 **Script Summary:**\n${userMessage.content.slice(0, 100)}${userMessage.content.length > 100 ? '...' : ''}\n\n🎨 **Selected Style:** ${selectedStyle}\n👥 **Characters:** ${selectedCharacters.length > 0 ? selectedCharacters.join(', ') : 'None selected'}\n\nWould you like me to create a new project and break this down into scenes?`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
@@ -68,7 +66,8 @@ export function HomeTab() {
   };
 
   const handleCreateFromScript = () => {
-    const project = createProject('New Script Project', input.slice(0, 200));
+    const lastUserMessage = messages.filter(m => m.role === 'user').pop();
+    const project = createProject('New Script Project', lastUserMessage?.content.slice(0, 200) || '');
     toast({ title: 'Project created!', description: 'Navigating to your new project...' });
     navigate(`/project/${project.id}`);
   };
@@ -80,105 +79,172 @@ export function HomeTab() {
     }
   };
 
-  return (
-    <div className="flex h-[calc(100vh-12rem)] flex-col">
-      {/* Settings Panel */}
-      <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen} className="mb-4">
-        <CollapsibleTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
-            <div className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
-              <span>Style & Characters</span>
-              {(selectedStyle || selectedCharacters.length > 0) && (
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-                  {selectedCharacters.length > 0 ? `${selectedCharacters.length} selected` : selectedStyle}
-                </span>
-              )}
-            </div>
-            {settingsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="mt-4 space-y-6">
-          <StyleSelector selectedStyle={selectedStyle} onStyleSelect={setSelectedStyle} />
-          <CharacterLibrary selectedCharacters={selectedCharacters} onCharacterToggle={(id) => {
-            setSelectedCharacters(prev => 
-              prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-            );
-          }} />
-        </CollapsibleContent>
-      </Collapsible>
+  const hasConversation = messages.length > 0;
 
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto rounded-lg border bg-background p-4">
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
-            >
-              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
-              }`}>
-                {message.role === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
-              </div>
-              <div className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                message.role === 'user' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted'
-              }`}>
-                <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-                <p className="mt-1 text-xs opacity-60">
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-            </div>
-          ))}
-          {isLoading && (
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                <Bot className="h-4 w-4" />
-              </div>
-              <div className="rounded-lg bg-muted px-4 py-2">
-                <div className="flex gap-1">
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-foreground/50" style={{ animationDelay: '0ms' }} />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-foreground/50" style={{ animationDelay: '150ms' }} />
-                  <span className="h-2 w-2 animate-bounce rounded-full bg-foreground/50" style={{ animationDelay: '300ms' }} />
+  return (
+    <div className="flex h-[calc(100vh-8rem)] flex-col items-center justify-center">
+      {/* Chat Messages - Only show when there's a conversation */}
+      {hasConversation && (
+        <div className="mb-6 w-full max-w-3xl flex-1 overflow-y-auto rounded-xl border bg-card/50 p-4">
+          <div className="space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+              >
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                  message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                }`}>
+                  {message.role === 'user' ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                </div>
+                <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                  message.role === 'user' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted'
+                }`}>
+                  <p className="whitespace-pre-wrap text-sm">{message.content}</p>
                 </div>
               </div>
+            ))}
+            {isLoading && (
+              <div className="flex gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                  <Bot className="h-4 w-4" />
+                </div>
+                <div className="rounded-2xl bg-muted px-4 py-3">
+                  <div className="flex gap-1">
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-foreground/50" style={{ animationDelay: '0ms' }} />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-foreground/50" style={{ animationDelay: '150ms' }} />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-foreground/50" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Create Project Button */}
+          {messages.length > 1 && !isLoading && (
+            <div className="mt-4 flex justify-center">
+              <Button onClick={handleCreateFromScript} className="gradient-primary">
+                <Sparkles className="mr-2 h-4 w-4" />
+                Create Project from Script
+              </Button>
             </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
+      )}
 
-        {/* Create Project Button */}
-        {messages.length > 1 && !isLoading && (
-          <div className="mt-4 flex justify-center">
-            <Button onClick={handleCreateFromScript} className="gradient-primary">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Create Project from Script
-            </Button>
+      {/* Main Input Area - Centered when no conversation */}
+      <div className={`w-full max-w-3xl ${!hasConversation ? 'flex-1 flex flex-col justify-center' : ''}`}>
+        {!hasConversation && (
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-semibold text-foreground/80">What story will you create today?</h1>
           </div>
         )}
+        
+        {/* Dark Input Container with Glow */}
+        <div className="relative">
+          {/* Glow Effect */}
+          <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-b from-cyan-500/20 via-cyan-500/5 to-transparent blur-xl" />
+          
+          <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/95 shadow-xl backdrop-blur-sm">
+            {/* Input Area */}
+            <div className="relative p-4">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Drag/Paste 🖼️ image here to try [Character] & [Style] reference."
+                className="min-h-[120px] resize-none border-0 bg-transparent text-base placeholder:text-muted-foreground/60 focus-visible:ring-0"
+                disabled={isLoading}
+              />
+            </div>
+
+            {/* Bottom Action Bar */}
+            <div className="flex items-center gap-2 border-t border-border/30 px-4 py-3">
+              {/* Plus Button */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 shrink-0 rounded-lg border-border/50 bg-muted/50 hover:bg-muted"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+
+              {/* Style Button */}
+              <Button
+                variant="outline"
+                onClick={() => setShowStyleDialog(true)}
+                className="h-9 gap-2 rounded-lg border-border/50 bg-muted/50 px-3 hover:bg-muted"
+              >
+                <Palette className="h-4 w-4" />
+                <span className="bg-gradient-to-r from-pink-400 to-violet-400 bg-clip-text text-transparent">
+                  {selectedStyle ? '1' : '0'} Style
+                </span>
+              </Button>
+
+              {/* Characters Button */}
+              <Button
+                variant="outline"
+                onClick={() => setShowCharacterDialog(true)}
+                className="h-9 gap-2 rounded-lg border-border/50 bg-muted/50 px-3 hover:bg-muted"
+              >
+                <span className="text-base">😊</span>
+                <span>Characters</span>
+                {selectedCharacters.length > 0 && (
+                  <span className="rounded-full bg-primary/20 px-1.5 text-xs text-primary">
+                    {selectedCharacters.length}
+                  </span>
+                )}
+              </Button>
+
+              {/* Spacer */}
+              <div className="flex-1" />
+
+              {/* Send Button */}
+              <Button 
+                onClick={handleSend} 
+                disabled={!input.trim() || isLoading}
+                size="icon"
+                className="h-9 w-9 shrink-0 rounded-lg bg-primary hover:bg-primary/90"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Input Area */}
-      <div className="mt-4 flex gap-2">
-        <Textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Paste your script or describe your story idea..."
-          className="min-h-[60px] resize-none"
-          disabled={isLoading}
-        />
-        <Button 
-          onClick={handleSend} 
-          disabled={!input.trim() || isLoading}
-          className="gradient-primary h-auto"
-        >
-          <Send className="h-4 w-4" />
-        </Button>
-      </div>
+      {/* Style Dialog */}
+      <Dialog open={showStyleDialog} onOpenChange={setShowStyleDialog}>
+        <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Select Visual Style</DialogTitle>
+          </DialogHeader>
+          <StyleSelector selectedStyle={selectedStyle} onStyleSelect={(style) => {
+            setSelectedStyle(style);
+            setShowStyleDialog(false);
+          }} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Character Dialog */}
+      <Dialog open={showCharacterDialog} onOpenChange={setShowCharacterDialog}>
+        <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Select Characters</DialogTitle>
+          </DialogHeader>
+          <CharacterLibrary 
+            selectedCharacters={selectedCharacters} 
+            onCharacterToggle={(id) => {
+              setSelectedCharacters(prev => 
+                prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+              );
+            }} 
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
