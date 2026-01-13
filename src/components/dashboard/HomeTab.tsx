@@ -7,13 +7,29 @@ import { Send, Sparkles, Plus, Palette, Bot, User, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom';
 import { useProject } from '@/contexts/ProjectContext';
 import { useToast } from '@/hooks/use-toast';
-import { parseScriptAsync } from '@/utils/scriptParser';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
+interface ExpandedScene {
+  sceneNumber: number;
+  heading: string;
+  location: string;
+  timeOfDay: string;
+  description: string;
+  characters: string[];
+  dialogue: { character: string; text: string }[];
+  lighting: string;
+}
+
+interface StoryResponse {
+  summary: string;
+  scenes: ExpandedScene[];
+}
 
 interface Message {
   id: string;
@@ -24,6 +40,7 @@ interface Message {
 
 export function HomeTab() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [expandedStory, setExpandedStory] = useState<StoryResponse | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
@@ -53,41 +70,79 @@ export function HomeTab() {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
+    setExpandedStory(null);
 
-    // Simulate AI processing
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke('expand-story', {
+        body: {
+          description: input,
+          style: selectedStyle,
+          characters: selectedCharacters,
+        },
+      });
+
+      if (error) throw error;
+
+      const storyData = data as StoryResponse;
+      setExpandedStory(storyData);
+
+      const sceneList = storyData.scenes
+        .map(s => `**Scene ${s.sceneNumber}: ${s.heading}**\n${s.description}`)
+        .join('\n\n');
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Great! I've analyzed your script. Here's what I found:\n\n📝 **Script Summary:**\n${userMessage.content.slice(0, 100)}${userMessage.content.length > 100 ? '...' : ''}\n\n🎨 **Selected Style:** ${selectedStyle}\n👥 **Characters:** ${selectedCharacters.length > 0 ? selectedCharacters.join(', ') : 'None selected'}\n\nWould you like me to create a new project and break this down into scenes?`,
+        content: `✨ **I've expanded your story idea!**\n\n${storyData.summary}\n\n---\n\n${sceneList}\n\n---\n\n🎨 **Style:** ${selectedStyle}\n👥 **Characters:** ${storyData.scenes.flatMap(s => s.characters).filter((v, i, a) => a.indexOf(v) === i).join(', ') || 'To be designed'}\n\nReady to create your project with these ${storyData.scenes.length} scenes?`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error: any) {
+      console.error('Error expanding story:', error);
+      const errorMessage = error?.message || 'Failed to expand story. Please try again.';
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      // Remove the user message if we failed
+      setMessages(prev => prev.filter(m => m.id !== userMessage.id));
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleCreateFromScript = async () => {
-    const lastUserMessage = messages.filter(m => m.role === 'user').pop();
-    if (!lastUserMessage) return;
+    if (!expandedStory) return;
 
     setIsCreatingProject(true);
     
     try {
-      // Create the project
-      const project = createProject('New Script Project', lastUserMessage.content.slice(0, 200));
+      // Create the project with the story summary
+      const project = createProject('New Story Project', expandedStory.summary);
       
-      // Parse the script and create scenes
-      const parsedScenes = await parseScriptAsync(lastUserMessage.content, project.id);
-      
-      // Add all parsed scenes to the project
-      parsedScenes.forEach(scene => {
-        addScene(scene);
+      // Convert expanded scenes to project scenes
+      expandedStory.scenes.forEach((scene) => {
+        addScene({
+          projectId: project.id,
+          sceneNumber: scene.sceneNumber,
+          heading: scene.heading,
+          location: scene.location,
+          timeOfDay: scene.timeOfDay,
+          description: scene.description,
+          characters: scene.characters,
+          dialogue: scene.dialogue.map((d, i) => ({
+            id: `dialogue-${Date.now()}-${i}`,
+            character: d.character,
+            text: d.text,
+          })),
+          lighting: scene.lighting,
+        });
       });
 
       toast({ 
         title: 'Project created!', 
-        description: `Created ${parsedScenes.length} scenes from your script. Ready for storyboarding!` 
+        description: `Created ${expandedStory.scenes.length} scenes from your story. Ready for storyboarding!` 
       });
       
       // Navigate to project with scenes tab active
@@ -95,7 +150,7 @@ export function HomeTab() {
     } catch (error) {
       toast({ 
         title: 'Error creating project', 
-        description: 'Something went wrong while parsing your script.',
+        description: 'Something went wrong while creating your project.',
         variant: 'destructive'
       });
     } finally {
