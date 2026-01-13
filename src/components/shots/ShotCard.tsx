@@ -31,7 +31,6 @@ import {
   Pause,
   Volume2,
   VolumeX,
-  Music,
   Mic,
   Sparkles,
   Camera,
@@ -172,51 +171,20 @@ export function ShotCard({
           </div>
         </div>
 
-        {/* Audio Controls */}
+        {/* Audio Controls - Dialogue Only (shot-level) */}
         <CardContent className="p-3 space-y-3">
-          {/* Audio Tracks */}
-          <div className="space-y-2">
-            {/* Dialogue Track */}
-            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-2">
-              <Mic className="h-4 w-4 text-primary" />
-              <div className="flex-1">
-                <p className="text-xs font-medium">Dialogue</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {frame?.dialogue || 'No dialogue'}
-                </p>
-              </div>
-              <Button size="icon" variant="ghost" className="h-6 w-6">
-                <Sparkles className="h-3 w-3" />
-              </Button>
+          {/* Dialogue Track - Shot Level */}
+          <div className="flex items-center gap-2 rounded-lg bg-primary/10 border border-primary/20 p-2">
+            <Mic className="h-4 w-4 text-primary" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium">Dialogue</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {frame?.dialogue || 'No dialogue for this shot'}
+              </p>
             </div>
-
-            {/* Music Track */}
-            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-2">
-              <Music className="h-4 w-4 text-amber-500" />
-              <div className="flex-1">
-                <p className="text-xs font-medium">Background Music</p>
-                <p className="text-xs text-muted-foreground">
-                  {shot.notes?.includes('music:') ? shot.notes.split('music:')[1]?.split(',')[0] : 'None'}
-                </p>
-              </div>
-              <Button size="icon" variant="ghost" className="h-6 w-6">
-                <Sparkles className="h-3 w-3" />
-              </Button>
-            </div>
-
-            {/* SFX Track */}
-            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-2">
-              <Volume2 className="h-4 w-4 text-emerald-500" />
-              <div className="flex-1">
-                <p className="text-xs font-medium">Sound Effects</p>
-                <p className="text-xs text-muted-foreground">
-                  {shot.notes?.includes('sfx:') ? shot.notes.split('sfx:')[1]?.split(',')[0] : 'Auto-detect'}
-                </p>
-              </div>
-              <Button size="icon" variant="ghost" className="h-6 w-6">
-                <Sparkles className="h-3 w-3" />
-              </Button>
-            </div>
+            <Button size="icon" variant="ghost" className="h-6 w-6 shrink-0" title="Generate with AI">
+              <Sparkles className="h-3 w-3" />
+            </Button>
           </div>
 
           {/* Volume Control */}

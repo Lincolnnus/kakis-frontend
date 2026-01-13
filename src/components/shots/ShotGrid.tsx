@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { Shot, StoryboardFrame, CameraAngle, CameraMovement, Framing } from '@/types';
 import { ShotCard } from './ShotCard';
+import { GlobalAudioTimeline } from './GlobalAudioTimeline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -25,7 +26,7 @@ import {
   ListChecks,
   Grid3X3,
   LayoutList,
-  Music,
+  Mic,
   Volume2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -273,13 +274,20 @@ export function ShotGrid({
         </SortableContext>
       </DndContext>
 
+      {/* Global Audio Timeline - Music & SFX across shots */}
+      <GlobalAudioTimeline shots={sortedShots} frames={frames} />
+
       {/* Summary */}
       <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4 text-sm">
         <div className="flex items-center gap-4 text-muted-foreground">
           <span>{sortedShots.length} shots</span>
           <span className="flex items-center gap-1">
+            <Mic className="h-3 w-3" />
+            Dialogue: per shot
+          </span>
+          <span className="flex items-center gap-1">
             <Volume2 className="h-3 w-3" />
-            Audio ready: 0/{sortedShots.length}
+            Music/SFX: timeline above
           </span>
         </div>
         <span className="text-xs text-muted-foreground">Drag cards to reorder</span>
