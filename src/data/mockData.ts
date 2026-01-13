@@ -438,6 +438,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-4-1',
     sceneId: 'scene-1-4',
+    shotId: 'shot-1-4-1',
     frameNumber: 12,
     imageUrl: lunaFrame12,
     description: 'Wide shot of workshop interior - shelves of stardust jars, moonbeam telescope, sleeping baby stars.',
@@ -450,6 +451,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-4-2',
     sceneId: 'scene-1-4',
+    shotId: 'shot-1-4-2',
     frameNumber: 13,
     imageUrl: lunaFrame13,
     description: 'Close-up of Luna\'s hand touching a jar of glittering stardust, colors reflecting in her eyes.',
@@ -463,6 +465,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-4-3',
     sceneId: 'scene-1-4',
+    shotId: 'shot-1-4-3',
     frameNumber: 14,
     imageUrl: lunaFrame14,
     description: 'Starkeeper gestures sadly toward corner where dim, flickering stars huddle together.',
@@ -476,6 +479,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-4-4',
     sceneId: 'scene-1-4',
+    shotId: 'shot-1-4-3', // Same shot - grouped with previous
     frameNumber: 15,
     imageUrl: lunaFrame15,
     description: 'Luna kneels beside the dim stars, reaching out gently. Starkeeper watches with hope.',
@@ -882,6 +886,43 @@ export const mockShots: Shot[] = [
     cameraMovement: 'static',
     framing: 'medium',
     notes: 'Starkeeper reveal - constellation VFX on body',
+  },
+  // Scene 4 shots
+  {
+    id: 'shot-1-4-1',
+    projectId: 'project-1',
+    shotNumber: 8,
+    frameId: 'frame-1-4-1',
+    sceneId: 'scene-1-4',
+    cameraAngle: 'eye-level',
+    lensType: '24mm',
+    cameraMovement: 'pan-right',
+    framing: 'wide',
+    notes: 'Reveal workshop interior, magical details',
+  },
+  {
+    id: 'shot-1-4-2',
+    projectId: 'project-1',
+    shotNumber: 9,
+    frameId: 'frame-1-4-2',
+    sceneId: 'scene-1-4',
+    cameraAngle: 'eye-level',
+    lensType: '100mm',
+    cameraMovement: 'static',
+    framing: 'close-up',
+    notes: 'Insert shot of stardust interaction',
+  },
+  {
+    id: 'shot-1-4-3',
+    projectId: 'project-1',
+    shotNumber: 10,
+    frameId: 'frame-1-4-3',
+    sceneId: 'scene-1-4',
+    cameraAngle: 'eye-level',
+    lensType: '35mm',
+    cameraMovement: 'dolly-in',
+    framing: 'medium',
+    notes: 'Emotional climax - dim stars reveal',
   },
   // Project 2 Shots - The Robot's Garden
   {
