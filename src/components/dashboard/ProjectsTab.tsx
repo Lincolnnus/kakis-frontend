@@ -4,18 +4,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useProject } from '@/contexts/ProjectContext';
-import { Plus, Search, Film, Calendar, Layers } from 'lucide-react';
+import { Plus, Search, Film, Calendar, Layers, MoreVertical, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function ProjectsTab() {
-  const { projects, createProject } = useProject();
+  const { projects, createProject, deleteProject } = useProject();
   const [search, setSearch] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const { toast } = useToast();
 
   const filteredProjects = projects.filter(p =>
@@ -29,6 +33,22 @@ export function ProjectsTab() {
     setNewTitle('');
     setNewDescription('');
     setDialogOpen(false);
+  };
+
+  const handleDeleteProject = () => {
+    if (!projectToDelete) return;
+    const project = projects.find(p => p.id === projectToDelete);
+    deleteProject(projectToDelete);
+    toast({ title: 'Project deleted', description: `"${project?.title}" has been removed.` });
+    setProjectToDelete(null);
+    setDeleteDialogOpen(false);
+  };
+
+  const openDeleteDialog = (e: React.MouseEvent, projectId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setProjectToDelete(projectId);
+    setDeleteDialogOpen(true);
   };
 
   const statusColors: Record<string, string> = {
@@ -98,9 +118,27 @@ export function ProjectsTab() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <CardTitle className="text-lg group-hover:text-primary">{project.title}</CardTitle>
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[project.status]}`}>
-                    {project.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[project.status]}`}>
+                      {project.status}
+                    </span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                          onClick={(e) => openDeleteDialog(e, project.id)}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
                 <CardDescription className="line-clamp-2">{project.description}</CardDescription>
               </CardHeader>
@@ -128,6 +166,24 @@ export function ProjectsTab() {
           <p className="text-muted-foreground">Create your first project to get started</p>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Project</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this project? This action cannot be undone and all associated scenes, storyboards, and shots will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProject} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
