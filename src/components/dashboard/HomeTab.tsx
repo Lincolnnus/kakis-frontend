@@ -122,8 +122,35 @@ export function HomeTab() {
     setIsCreatingProject(true);
     
     try {
-      // Create the project with the story summary
-      const project = createProject('New Story Project', expandedStory.summary);
+      // Generate a meaningful project name from the story context
+      const generateProjectName = (): string => {
+        // Try to extract a title from the first scene heading
+        if (expandedStory.scenes.length > 0) {
+          const firstScene = expandedStory.scenes[0];
+          // Use the heading if it's descriptive enough
+          if (firstScene.heading && firstScene.heading.length > 3) {
+            return firstScene.heading;
+          }
+          // Fallback to location
+          if (firstScene.location) {
+            return `Story of ${firstScene.location}`;
+          }
+        }
+        // Extract key words from the summary (first 5 meaningful words)
+        if (expandedStory.summary) {
+          const words = expandedStory.summary.split(/\s+/).slice(0, 5).join(' ');
+          return words.length > 30 ? words.slice(0, 30) + '...' : words;
+        }
+        // Fallback to original prompt
+        if (originalPrompt) {
+          const trimmed = originalPrompt.slice(0, 40);
+          return trimmed.length < originalPrompt.length ? trimmed + '...' : trimmed;
+        }
+        return 'Untitled Story';
+      };
+
+      const projectName = generateProjectName();
+      const project = createProject(projectName, expandedStory.summary);
       
       // Convert expanded scenes to project scenes
       expandedStory.scenes.forEach((scene) => {
