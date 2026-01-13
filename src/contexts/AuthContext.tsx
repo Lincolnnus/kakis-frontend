@@ -1,33 +1,52 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { User } from '@/types';
-import { mockUser } from '@/data/mockData';
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  isLoading: boolean;
+  loginWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = useCallback(async (email: string, _password: string) => {
-    // Mock login - simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setUser({ ...mockUser, email });
+  useEffect(() => {
+    // Set up auth state listener BEFORE getting initial session
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const signup = useCallback(async (name: string, email: string, _password: string) => {
-    // Mock signup - simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setUser({ ...mockUser, name, email });
+  const loginWithGoogle = useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/dashboard',
+      },
+    });
+    if (error) throw error;
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
     setUser(null);
   }, []);
 
@@ -36,8 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
-        login,
-        signup,
+        isLoading,
+        loginWithGoogle,
         logout,
       }}
     >
