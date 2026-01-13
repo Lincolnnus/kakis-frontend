@@ -1,4 +1,4 @@
-import { Check, FileText, Layers, Image, ListChecks, Film } from 'lucide-react';
+import { Check, Layers, Image, ListChecks, Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WorkflowStep {
@@ -11,7 +11,6 @@ interface WorkflowStep {
 }
 
 interface WorkflowStepperProps {
-  scriptHasContent: boolean;
   sceneCount: number;
   frameCount: number;
   shotCount: number;
@@ -21,7 +20,6 @@ interface WorkflowStepperProps {
 }
 
 export function WorkflowStepper({
-  scriptHasContent,
   sceneCount,
   frameCount,
   shotCount,
@@ -30,13 +28,6 @@ export function WorkflowStepper({
   onStepClick,
 }: WorkflowStepperProps) {
   const steps: WorkflowStep[] = [
-    {
-      id: 'script',
-      label: 'Script',
-      icon: <FileText className="h-4 w-4" />,
-      isComplete: scriptHasContent,
-      isActive: activeTab === 'script',
-    },
     {
       id: 'scenes',
       label: 'Scenes',
