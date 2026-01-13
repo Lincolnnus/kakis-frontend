@@ -3,11 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, Upload, Wand2, Loader2 } from 'lucide-react';
+import { FileText, Upload, Wand2, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { sampleScript } from '@/data/mockData';
+import { StyleSelector } from './StyleSelector';
+import { CharacterLibrary } from './CharacterLibrary';
 
 interface ScriptInputProps {
-  onParse: (script: string) => Promise<void>;
+  onParse: (script: string, options?: { styleId?: string; characterIds?: string[] }) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -15,6 +18,11 @@ export function ScriptInput({ onParse, isLoading }: ScriptInputProps) {
   const [script, setScript] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Style and character selection state
+  const [selectedStyle, setSelectedStyle] = useState<string | null>('anime');
+  const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
+  const [showOptions, setShowOptions] = useState(true);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,21 +45,67 @@ export function ScriptInput({ onParse, isLoading }: ScriptInputProps) {
 
   const handleParse = async () => {
     if (!script.trim()) return;
-    await onParse(script);
+    await onParse(script, { 
+      styleId: selectedStyle || undefined, 
+      characterIds: selectedCharacters.length > 0 ? selectedCharacters : undefined 
+    });
+  };
+
+  const handleCharacterToggle = (characterId: string) => {
+    setSelectedCharacters(prev => 
+      prev.includes(characterId)
+        ? prev.filter(id => id !== characterId)
+        : [...prev, characterId]
+    );
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          Script Input
-        </CardTitle>
-        <CardDescription>
-          Paste your script or upload a file. We'll automatically break it down into scenes.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className="space-y-6">
+      {/* Style & Character Options */}
+      <Collapsible open={showOptions} onOpenChange={setShowOptions}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Pre-Production Settings</h3>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm">
+              {showOptions ? (
+                <>
+                  <ChevronUp className="h-4 w-4 mr-1" />
+                  Hide Options
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                  Show Options
+                </>
+              )}
+            </Button>
+          </CollapsibleTrigger>
+        </div>
+        
+        <CollapsibleContent className="space-y-6">
+          <StyleSelector 
+            selectedStyle={selectedStyle} 
+            onStyleSelect={setSelectedStyle} 
+          />
+          <CharacterLibrary 
+            selectedCharacters={selectedCharacters} 
+            onCharacterToggle={handleCharacterToggle} 
+          />
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Script Input Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Script Input
+          </CardTitle>
+          <CardDescription>
+            Paste your script or upload a file. We'll automatically break it down into scenes.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
         <Tabs defaultValue="paste" className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="paste">Paste Script</TabsTrigger>
@@ -140,7 +194,8 @@ No, please sit down."
             </span>
           )}
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
