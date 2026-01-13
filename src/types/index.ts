@@ -28,6 +28,8 @@ export interface Scene {
   description: string;
   characters: string[];
   dialogue: DialogueLine[];
+  backgroundImageUrl?: string;
+  lighting?: string;
 }
 
 export interface DialogueLine {
