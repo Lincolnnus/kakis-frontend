@@ -117,28 +117,27 @@ export function SceneCard({ scene, onUpdate, onDelete, isDragging }: SceneCardPr
         isEditing ? 'ring-2 ring-primary' : ''
       }`}
     >
-      {/* Background Image Preview */}
-      <div className="relative h-32 w-full bg-muted overflow-hidden">
+      {/* Background Image Preview - Full Image Visible */}
+      <div className="relative w-full bg-muted">
         {isGeneratingBg ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted">
+          <div className="aspect-[2/1] flex flex-col items-center justify-center bg-muted">
             <Sparkles className="h-6 w-6 text-primary animate-pulse mb-2" />
             <p className="text-xs text-muted-foreground">Generating background...</p>
           </div>
         ) : displayBgUrl ? (
-          <>
+          <div className="relative">
             <img 
               src={displayBgUrl} 
               alt={`${scene.location} background`}
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain bg-black/5"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent" />
             
-            {/* Lighting Badge */}
+            {/* Lighting Badge - Overlay */}
             {displayLighting && (
               <div className="absolute bottom-2 left-2 right-2">
-                <div className="flex items-start gap-1.5 rounded-md bg-background/80 backdrop-blur-sm px-2 py-1.5">
+                <div className="flex items-start gap-1.5 rounded-md bg-background/90 backdrop-blur-sm px-2 py-1.5">
                   <Sun className="h-3 w-3 text-amber-500 mt-0.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground line-clamp-2">{displayLighting}</p>
+                  <p className="text-xs text-muted-foreground">{displayLighting}</p>
                 </div>
               </div>
             )}
@@ -150,9 +149,9 @@ export function SceneCard({ scene, onUpdate, onDelete, isDragging }: SceneCardPr
                 AI Background
               </Badge>
             </div>
-          </>
+          </div>
         ) : (
-          <Skeleton className="w-full h-full" />
+          <Skeleton className="aspect-[2/1] w-full" />
         )}
       </div>
 
