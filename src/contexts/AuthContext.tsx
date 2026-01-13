@@ -1,52 +1,42 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
-import { User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+
+interface MockUser {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: MockUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   loginWithGoogle: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Set up auth state listener BEFORE getting initial session
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-        setIsLoading(false);
-      }
-    );
-
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const [user, setUser] = useState<MockUser | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loginWithGoogle = useCallback(async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/dashboard',
-      },
+    setIsLoading(true);
+    // Mock Google OAuth delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Mock user data as if returned from Google
+    setUser({
+      id: 'google-user-123',
+      email: 'creator@example.com',
+      name: 'Alex Director',
+      avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c',
     });
-    if (error) throw error;
+    setIsLoading(false);
   }, []);
 
-  const logout = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+  const logout = useCallback(() => {
     setUser(null);
   }, []);
 

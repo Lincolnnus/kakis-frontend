@@ -58,7 +58,7 @@ export function Header() {
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10">
                       <User className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm">{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</span>
+                    <span className="text-sm">{user?.name}</span>
                     <Badge variant="secondary" className="ml-1 text-xs">
                       {currentPlan.name}
                     </Badge>
@@ -67,7 +67,7 @@ export function Header() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col">
-                      <span>{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</span>
+                      <span>{user?.name}</span>
                       <span className="text-xs font-normal text-muted-foreground">{user?.email}</span>
                     </div>
                   </DropdownMenuLabel>
@@ -151,7 +151,7 @@ export function Header() {
                     <User className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{user?.user_metadata?.full_name || user?.email?.split('@')[0]}</p>
+                    <p className="text-sm font-medium">{user?.name}</p>
                     <Badge variant="secondary" className="text-xs">{currentPlan.name}</Badge>
                   </div>
                 </div>
