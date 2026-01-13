@@ -1,47 +1,40 @@
 import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { ProjectsTab } from '@/components/dashboard/ProjectsTab';
 import { HomeTab } from '@/components/dashboard/HomeTab';
 import { CharactersTab } from '@/components/dashboard/CharactersTab';
-import { Home, FolderKanban, Users } from 'lucide-react';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('home');
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return <HomeTab />;
+      case 'projects':
+        return <ProjectsTab />;
+      case 'characters':
+        return <CharactersTab />;
+      default:
+        return <HomeTab />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-muted/30">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="home" className="gap-2">
-              <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Home</span>
-            </TabsTrigger>
-            <TabsTrigger value="projects" className="gap-2">
-              <FolderKanban className="h-4 w-4" />
-              <span className="hidden sm:inline">Projects</span>
-            </TabsTrigger>
-            <TabsTrigger value="characters" className="gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Characters</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="home">
-            <HomeTab />
-          </TabsContent>
-
-          <TabsContent value="projects">
-            <ProjectsTab />
-          </TabsContent>
-
-          <TabsContent value="characters">
-            <CharactersTab />
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-muted/30">
+        <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <div className="flex-1 flex flex-col">
+          <Header>
+            <SidebarTrigger className="mr-2" />
+          </Header>
+          <main className="flex-1 container mx-auto px-4 py-8">
+            {renderContent()}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }

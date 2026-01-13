@@ -12,9 +12,13 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Film, Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 
-export function Header() {
+interface HeaderProps {
+  children?: ReactNode;
+}
+
+export function Header({ children }: HeaderProps) {
   const { isAuthenticated, user, logout } = useAuth();
   const { currentPlan } = useSubscription();
   const location = useLocation();
@@ -25,13 +29,16 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Film className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold">StoryboardAI</span>
-        </Link>
+        <div className="flex items-center">
+          {children}
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Film className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold">StoryboardAI</span>
+          </Link>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-6 md:flex">
