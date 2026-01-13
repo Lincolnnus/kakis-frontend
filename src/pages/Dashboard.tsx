@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Header } from '@/components/layout/Header';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { ProjectsTab } from '@/components/dashboard/ProjectsTab';
@@ -27,9 +26,10 @@ export default function Dashboard() {
       <div className="min-h-screen flex w-full bg-muted/30">
         <DashboardSidebar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex-1 flex flex-col">
-          <Header>
-            <SidebarTrigger className="mr-2" />
-          </Header>
+          {/* Minimal header with just the sidebar trigger */}
+          <header className="sticky top-0 z-50 flex h-14 items-center border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <SidebarTrigger />
+          </header>
           <main className="flex-1 container mx-auto px-4 py-8">
             {renderContent()}
           </main>

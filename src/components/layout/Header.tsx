@@ -55,10 +55,6 @@ export function Header({ children }: HeaderProps) {
           
           {isAuthenticated ? (
             <>
-              <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">
-                Dashboard
-              </Link>
-              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center gap-2">
@@ -162,13 +158,6 @@ export function Header({ children }: HeaderProps) {
                     <Badge variant="secondary" className="text-xs">{currentPlan.name}</Badge>
                   </div>
                 </div>
-                <Link 
-                  to="/dashboard" 
-                  className="text-muted-foreground hover:text-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
                 <Link 
                   to="/billing" 
                   className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
