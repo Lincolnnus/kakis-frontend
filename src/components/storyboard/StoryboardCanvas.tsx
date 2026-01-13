@@ -29,6 +29,7 @@ import {
   Plus, 
   Loader2, 
   Grid3X3, 
+  LayoutList,
   Layers,
   Download,
   Film
@@ -337,9 +338,9 @@ export function StoryboardCanvas({
               size="sm"
               className="rounded-l-none"
               onClick={() => setViewMode('grouped')}
-              title="Group by Shot"
+              title="List View"
             >
-              <Film className="h-4 w-4" />
+              <LayoutList className="h-4 w-4" />
             </Button>
           </div>
         </div>

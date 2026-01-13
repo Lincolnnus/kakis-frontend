@@ -234,21 +234,9 @@ export function ShotGrid({
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleGenerateAllAudio}>
-            <Music className="mr-2 h-4 w-4" />
-            Generate Audio
-          </Button>
           <Button variant="outline" onClick={handleAutoGenerate}>
             <Wand2 className="mr-2 h-4 w-4" />
             Auto-Generate
-          </Button>
-          <Button variant="outline" onClick={handleExportCSV}>
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-          <Button onClick={handleAddShot} className="gradient-primary">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Shot
           </Button>
         </div>
       </div>
