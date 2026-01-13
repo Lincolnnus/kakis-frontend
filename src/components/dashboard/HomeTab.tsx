@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { StyleSelector } from '@/components/script/StyleSelector';
 import { CharacterLibrary } from '@/components/script/CharacterLibrary';
-import { Send, Sparkles, Plus, Users, Palette, Bot, User, Image } from 'lucide-react';
+import { Send, Sparkles, Plus, Palette, Bot, User, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useProject } from '@/contexts/ProjectContext';
 import { useToast } from '@/hooks/use-toast';
+import { parseScriptAsync } from '@/utils/scriptParser';
 import {
   Dialog,
   DialogContent,
@@ -25,13 +26,14 @@ export function HomeTab() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState('anime');
   const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
   const [showStyleDialog, setShowStyleDialog] = useState(false);
   const [showCharacterDialog, setShowCharacterDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { createProject } = useProject();
+  const { createProject, addScene } = useProject();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -65,11 +67,40 @@ export function HomeTab() {
     }, 1500);
   };
 
-  const handleCreateFromScript = () => {
+  const handleCreateFromScript = async () => {
     const lastUserMessage = messages.filter(m => m.role === 'user').pop();
-    const project = createProject('New Script Project', lastUserMessage?.content.slice(0, 200) || '');
-    toast({ title: 'Project created!', description: 'Navigating to your new project...' });
-    navigate(`/project/${project.id}`);
+    if (!lastUserMessage) return;
+
+    setIsCreatingProject(true);
+    
+    try {
+      // Create the project
+      const project = createProject('New Script Project', lastUserMessage.content.slice(0, 200));
+      
+      // Parse the script and create scenes
+      const parsedScenes = await parseScriptAsync(lastUserMessage.content, project.id);
+      
+      // Add all parsed scenes to the project
+      parsedScenes.forEach(scene => {
+        addScene(scene);
+      });
+
+      toast({ 
+        title: 'Project created!', 
+        description: `Created ${parsedScenes.length} scenes from your script. Ready for storyboarding!` 
+      });
+      
+      // Navigate to project with scenes tab active
+      navigate(`/project/${project.id}?tab=scenes`);
+    } catch (error) {
+      toast({ 
+        title: 'Error creating project', 
+        description: 'Something went wrong while parsing your script.',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsCreatingProject(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -126,9 +157,22 @@ export function HomeTab() {
           {/* Create Project Button */}
           {messages.length > 1 && !isLoading && (
             <div className="mt-4 flex justify-center">
-              <Button onClick={handleCreateFromScript} className="gradient-primary">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Create Project from Script
+              <Button 
+                onClick={handleCreateFromScript} 
+                className="gradient-primary"
+                disabled={isCreatingProject}
+              >
+                {isCreatingProject ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Scenes...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Create Project & Generate Scenes
+                  </>
+                )}
               </Button>
             </div>
           )}

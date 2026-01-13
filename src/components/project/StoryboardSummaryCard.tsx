@@ -1,15 +1,20 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { useProject } from '@/contexts/ProjectContext';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Image, 
   Layers, 
   ArrowRight,
   Sparkles,
-  Grid3X3
+  Grid3X3,
+  Loader2
 } from 'lucide-react';
 import { Scene, StoryboardFrame } from '@/types';
+import { generateId } from '@/data/mockData';
 
 interface StoryboardSummaryCardProps {
   projectId: string;
@@ -18,6 +23,10 @@ interface StoryboardSummaryCardProps {
 }
 
 export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardSummaryCardProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { addFrame } = useProject();
+  const { toast } = useToast();
+
   const totalScenes = scenes.length;
   const totalFrames = frames.length;
   
@@ -33,6 +42,43 @@ export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardS
 
   const hasScenes = totalScenes > 0;
   const hasFrames = totalFrames > 0;
+
+  const handleGenerateStoryboard = async () => {
+    if (!hasScenes) return;
+    
+    setIsGenerating(true);
+    toast({ title: 'Generating storyboard...', description: 'Creating frames for each scene.' });
+
+    // Simulate AI generation with delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // Generate 2-3 frames per scene
+    let frameNumber = 1;
+    for (const scene of scenes) {
+      const framesPerScene = Math.floor(Math.random() * 2) + 2; // 2-3 frames
+      
+      for (let i = 0; i < framesPerScene; i++) {
+        addFrame({
+          sceneId: scene.id,
+          frameNumber: frameNumber++,
+          imageUrl: '/placeholder.svg',
+          description: `Frame ${i + 1} of Scene ${scene.sceneNumber}: ${scene.description?.slice(0, 100) || 'Visual representation'}`,
+          duration: 3,
+          cameraAngle: ['wide', 'medium', 'close-up', 'over-the-shoulder'][Math.floor(Math.random() * 4)],
+          cameraMovement: ['static', 'pan', 'tilt', 'zoom'][Math.floor(Math.random() * 4)],
+          notes: '',
+          style: 'anime',
+          isGenerating: false,
+        });
+      }
+    }
+
+    setIsGenerating(false);
+    toast({ 
+      title: 'Storyboard generated!', 
+      description: `Created frames for ${totalScenes} scenes. Click to view and edit.` 
+    });
+  };
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -108,16 +154,50 @@ export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardS
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3">
-            <Button asChild>
-              <Link to={`/project/${projectId}/storyboard`}>
-                Open Storyboard
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            {hasFrames && (
+              <Button asChild>
+                <Link to={`/project/${projectId}/storyboard`}>
+                  Open Storyboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
             {hasScenes && !hasFrames && (
-              <Button variant="outline" className="gap-2">
-                <Sparkles className="h-4 w-4" />
-                Auto-Generate Frames
+              <Button 
+                onClick={handleGenerateStoryboard} 
+                disabled={isGenerating}
+                className="gradient-primary"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Frames...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Storyboard
+                  </>
+                )}
+              </Button>
+            )}
+            {hasScenes && hasFrames && (
+              <Button 
+                variant="outline" 
+                onClick={handleGenerateStoryboard} 
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Regenerating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Regenerate All
+                  </>
+                )}
               </Button>
             )}
           </div>
@@ -129,9 +209,9 @@ export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardS
         <Card className="md:col-span-2 border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <Layers className="mb-4 h-12 w-12 text-muted-foreground/50" />
-            <h3 className="mb-2 text-lg font-medium">Parse Your Script First</h3>
+            <h3 className="mb-2 text-lg font-medium">Create Scenes First</h3>
             <p className="mb-4 max-w-md text-muted-foreground">
-              Import your screenplay to extract scenes, then generate storyboard frames for each scene.
+              Go to the Home tab to input your script and automatically generate scenes, then come back to create storyboard frames.
             </p>
           </CardContent>
         </Card>
