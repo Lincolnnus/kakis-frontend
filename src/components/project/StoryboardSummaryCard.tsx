@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { useProject } from '@/contexts/ProjectContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Image, 
   Layers, 
@@ -14,7 +15,6 @@ import {
   Loader2
 } from 'lucide-react';
 import { Scene, StoryboardFrame } from '@/types';
-import { generateId } from '@/data/mockData';
 
 interface StoryboardSummaryCardProps {
   projectId: string;
@@ -24,7 +24,8 @@ interface StoryboardSummaryCardProps {
 
 export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardSummaryCardProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { addFrame } = useProject();
+  const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
+  const { addFrame, updateFrame } = useProject();
   const { toast } = useToast();
 
   const totalScenes = scenes.length;
@@ -43,40 +44,91 @@ export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardS
   const hasScenes = totalScenes > 0;
   const hasFrames = totalFrames > 0;
 
+  const generateFrameImage = async (
+    scene: Scene, 
+    frameDescription: string,
+    cameraAngle: string,
+    style: string
+  ): Promise<string | null> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-storyboard-frame', {
+        body: {
+          sceneDescription: `${scene.heading}: ${frameDescription}`,
+          style,
+          cameraAngle,
+          lighting: scene.lighting || 'natural lighting',
+          characters: scene.characters || [],
+        },
+      });
+
+      if (error) throw error;
+      return data?.imageUrl || null;
+    } catch (error) {
+      console.error('Error generating frame image:', error);
+      return null;
+    }
+  };
+
   const handleGenerateStoryboard = async () => {
     if (!hasScenes) return;
     
     setIsGenerating(true);
-    toast({ title: 'Generating storyboard...', description: 'Creating frames for each scene.' });
+    
+    // Calculate total frames to generate
+    const totalToGenerate = scenes.length * 2; // 2 frames per scene
+    setGenerationProgress({ current: 0, total: totalToGenerate });
+    
+    toast({ 
+      title: 'Generating storyboard with AI...', 
+      description: `Creating ${totalToGenerate} frames with AI-generated images.` 
+    });
 
-    // Simulate AI generation with delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Generate 2-3 frames per scene
     let frameNumber = 1;
+    let generatedCount = 0;
+
     for (const scene of scenes) {
-      const framesPerScene = Math.floor(Math.random() * 2) + 2; // 2-3 frames
+      const framesPerScene = 2; // Generate 2 frames per scene
+      const cameraAngles = ['wide', 'medium', 'close-up'];
       
       for (let i = 0; i < framesPerScene; i++) {
-        addFrame({
+        const cameraAngle = cameraAngles[i % cameraAngles.length];
+        const frameDesc = i === 0 
+          ? `Establishing shot: ${scene.description?.slice(0, 150) || 'Scene overview'}`
+          : `Action shot: ${scene.dialogue?.[0]?.text || scene.description?.slice(0, 150) || 'Character moment'}`;
+        
+        // Create the frame first with a generating state
+        const newFrame = addFrame({
           sceneId: scene.id,
           frameNumber: frameNumber++,
-          imageUrl: '/placeholder.svg',
-          description: `Frame ${i + 1} of Scene ${scene.sceneNumber}: ${scene.description?.slice(0, 100) || 'Visual representation'}`,
+          imageUrl: undefined,
+          description: frameDesc,
           duration: 3,
-          cameraAngle: ['wide', 'medium', 'close-up', 'over-the-shoulder'][Math.floor(Math.random() * 4)],
-          cameraMovement: ['static', 'pan', 'tilt', 'zoom'][Math.floor(Math.random() * 4)],
+          cameraAngle,
+          cameraMovement: 'static',
           notes: '',
           style: 'anime',
+          isGenerating: true,
+        });
+
+        // Generate the AI image
+        const imageUrl = await generateFrameImage(scene, frameDesc, cameraAngle, 'anime');
+        
+        // Update the frame with the generated image
+        updateFrame(newFrame.id, {
+          imageUrl: imageUrl || '/placeholder.svg',
           isGenerating: false,
         });
+
+        generatedCount++;
+        setGenerationProgress({ current: generatedCount, total: totalToGenerate });
       }
     }
 
     setIsGenerating(false);
+    setGenerationProgress({ current: 0, total: 0 });
     toast({ 
       title: 'Storyboard generated!', 
-      description: `Created frames for ${totalScenes} scenes. Click to view and edit.` 
+      description: `Created ${generatedCount} AI-generated frames for ${totalScenes} scenes.` 
     });
   };
 
@@ -120,8 +172,30 @@ export function StoryboardSummaryCard({ projectId, scenes, frames }: StoryboardS
             </div>
           </div>
 
+          {/* Generation Progress */}
+          {isGenerating && generationProgress.total > 0 && (
+            <div className="space-y-2 rounded-lg border border-primary/20 bg-primary/5 p-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-2 font-medium text-primary">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Generating AI Images...
+                </span>
+                <span className="font-medium">
+                  {generationProgress.current} / {generationProgress.total}
+                </span>
+              </div>
+              <Progress 
+                value={(generationProgress.current / generationProgress.total) * 100} 
+                className="h-2" 
+              />
+              <p className="text-xs text-muted-foreground">
+                Each frame is being generated with AI. This may take a moment.
+              </p>
+            </div>
+          )}
+
           {/* Scene Coverage */}
-          {hasScenes && (
+          {hasScenes && !isGenerating && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Scene Coverage</span>
