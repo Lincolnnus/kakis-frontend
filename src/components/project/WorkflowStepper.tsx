@@ -1,4 +1,4 @@
-import { Check, FileText, Layers, Image, ListChecks, Film } from 'lucide-react';
+import { Check, FileText, Layers, Image, Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WorkflowStep {
@@ -49,17 +49,9 @@ export function WorkflowStepper({
       id: 'storyboard',
       label: 'Storyboard',
       icon: <Image className="h-4 w-4" />,
-      count: frameCount,
-      isComplete: frameCount > 0,
+      count: frameCount + shotCount,
+      isComplete: frameCount > 0 || shotCount > 0,
       isActive: activeTab === 'storyboard',
-    },
-    {
-      id: 'shots',
-      label: 'Shots',
-      icon: <ListChecks className="h-4 w-4" />,
-      count: shotCount,
-      isComplete: shotCount > 0,
-      isActive: activeTab === 'shots',
     },
     {
       id: 'animatic',
