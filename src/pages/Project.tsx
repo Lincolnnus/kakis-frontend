@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { ScriptInput } from '@/components/script/ScriptInput';
 import { SceneList } from '@/components/script/SceneList';
@@ -27,6 +27,7 @@ import {
 export default function Project() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { 
     projects, 
     scenes,
@@ -40,7 +41,10 @@ export default function Project() {
   } = useProject();
   const { toast } = useToast();
   const [isParsingScript, setIsParsingScript] = useState(false);
-  const [activeTab, setActiveTab] = useState('script');
+  
+  // Get initial tab from URL query param or default to 'script'
+  const initialTab = searchParams.get('tab') || 'script';
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   const project = projects.find(p => p.id === projectId);
   const projectScenes = scenes.filter(s => s.projectId === projectId);

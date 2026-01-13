@@ -61,7 +61,7 @@ export default function Storyboard() {
 
           <div className="flex gap-2">
             <Button variant="outline" asChild>
-              <Link to={`/project/${projectId}`}>
+              <Link to={`/project/${projectId}?tab=scenes`}>
                 <Layers className="mr-2 h-4 w-4" />
                 Scenes
               </Link>
