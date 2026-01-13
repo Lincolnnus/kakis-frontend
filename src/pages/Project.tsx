@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { ScriptInput } from '@/components/script/ScriptInput';
 import { SceneList } from '@/components/script/SceneList';
 import { WorkflowStepper } from '@/components/project/WorkflowStepper';
 import { CharacterList } from '@/components/project/CharacterList';
@@ -12,11 +11,8 @@ import { AnimaticSummaryCard } from '@/components/project/AnimaticSummaryCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProject } from '@/contexts/ProjectContext';
-import { useToast } from '@/hooks/use-toast';
-import { parseScriptAsync } from '@/utils/scriptParser';
 import { 
   ArrowLeft, 
-  FileText, 
   Layers, 
   Image,
   ListChecks, 
@@ -34,16 +30,14 @@ export default function Project() {
     frames,
     shots,
     setCurrentProject,
-    addScene,
     updateScene,
     deleteScene,
+    addScene,
     reorderScenes
   } = useProject();
-  const { toast } = useToast();
-  const [isParsingScript, setIsParsingScript] = useState(false);
   
-  // Get initial tab from URL query param or default to 'script'
-  const initialTab = searchParams.get('tab') || 'script';
+  // Get initial tab from URL query param or default to 'scenes'
+  const initialTab = searchParams.get('tab') || 'scenes';
   const [activeTab, setActiveTab] = useState(initialTab);
 
   const project = projects.find(p => p.id === projectId);
@@ -51,8 +45,6 @@ export default function Project() {
   const projectFrames = frames.filter(f => projectScenes.some(s => s.id === f.sceneId));
   const projectShots = shots.filter(s => s.projectId === projectId);
   
-  // Track if script has been parsed (has scenes)
-  const scriptHasContent = projectScenes.length > 0;
   const hasAnimatic = projectFrames.length > 0; // Simple check for now
 
   useEffect(() => {
@@ -63,36 +55,6 @@ export default function Project() {
       navigate('/dashboard');
     }
   }, [project, projectId, setCurrentProject, navigate]);
-
-  const handleParseScript = async (script: string) => {
-    if (!projectId) return;
-    
-    setIsParsingScript(true);
-    try {
-      const parsedScenes = await parseScriptAsync(script, projectId);
-      
-      // Add all parsed scenes
-      parsedScenes.forEach(scene => {
-        addScene(scene);
-      });
-
-      toast({
-        title: 'Script parsed successfully!',
-        description: `Found ${parsedScenes.length} scenes in your script.`,
-      });
-
-      // Switch to scenes tab
-      setActiveTab('scenes');
-    } catch (error) {
-      toast({
-        title: 'Parsing failed',
-        description: 'Could not parse the script. Please check the format.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsParsingScript(false);
-    }
-  };
 
   if (!project) {
     return (
@@ -130,7 +92,6 @@ export default function Project() {
 
         {/* Workflow Stepper */}
         <WorkflowStepper
-          scriptHasContent={scriptHasContent}
           sceneCount={projectScenes.length}
           frameCount={projectFrames.length}
           shotCount={projectShots.length}
@@ -141,11 +102,7 @@ export default function Project() {
 
         {/* Project Navigation */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-3xl grid-cols-5">
-            <TabsTrigger value="script" className="gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Script</span>
-            </TabsTrigger>
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="scenes" className="gap-2">
               <Layers className="h-4 w-4" />
               <span className="hidden sm:inline">Scenes</span>
@@ -178,10 +135,6 @@ export default function Project() {
               <span className="hidden sm:inline">Animatic</span>
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="script" className="space-y-6">
-            <ScriptInput onParse={handleParseScript} isLoading={isParsingScript} />
-          </TabsContent>
 
           <TabsContent value="scenes" className="space-y-6">
             {/* Character & Theme Section */}
