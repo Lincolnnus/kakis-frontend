@@ -20,7 +20,8 @@ import {
   MessageSquare,
   Trash2,
   Sun,
-  Sparkles
+  Sparkles,
+  AlertTriangle
 } from 'lucide-react';
 
 interface SceneCardProps {
@@ -111,11 +112,16 @@ export function SceneCard({ scene, onUpdate, onDelete, isDragging }: SceneCardPr
   const displayBgUrl = scene.backgroundImageUrl || (mockBgGenerated ? getMockBackgroundUrl(scene) : undefined);
   const displayLighting = scene.lighting || (mockBgGenerated ? getMockLighting(scene) : undefined);
 
+  // Check for incomplete scene
+  const missingCharacters = scene.characters.length === 0;
+  const missingDialogue = scene.dialogue.length === 0;
+  const isIncomplete = missingCharacters || missingDialogue;
+
   return (
     <Card 
       className={`transition-all overflow-hidden ${isDragging ? 'rotate-2 scale-105 shadow-xl' : ''} ${
         isEditing ? 'ring-2 ring-primary' : ''
-      }`}
+      } ${isIncomplete ? 'border-amber-500/50' : ''}`}
     >
       {/* Background Image Preview - Full Image Visible */}
       <div className="relative w-full bg-muted">
@@ -166,6 +172,18 @@ export function SceneCard({ scene, onUpdate, onDelete, isDragging }: SceneCardPr
               <Badge variant="secondary" className="font-mono">
                 {scene.sceneNumber}
               </Badge>
+              
+              {/* Incomplete Scene Warning Badge */}
+              {isIncomplete && !isEditing && (
+                <Badge variant="outline" className="border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  {missingCharacters && missingDialogue 
+                    ? 'Needs details' 
+                    : missingCharacters 
+                      ? 'No characters' 
+                      : 'No dialogue'}
+                </Badge>
+              )}
               
               {isEditing ? (
                 <Input
