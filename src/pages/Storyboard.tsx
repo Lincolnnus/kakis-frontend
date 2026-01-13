@@ -12,6 +12,7 @@ export default function Storyboard() {
     projects, 
     scenes, 
     frames,
+    shots,
     setCurrentProject,
     addFrame,
     updateFrame,
@@ -23,6 +24,7 @@ export default function Storyboard() {
   const projectFrames = frames.filter(f => 
     projectScenes.some(s => s.id === f.sceneId) || f.sceneId === ''
   );
+  const projectShots = shots.filter(s => s.projectId === projectId);
 
   useEffect(() => {
     if (project) {
@@ -79,6 +81,7 @@ export default function Storyboard() {
         <StoryboardCanvas
           frames={projectFrames}
           scenes={projectScenes}
+          shots={projectShots}
           projectId={projectId!}
           onAddFrame={addFrame}
           onUpdateFrame={updateFrame}
