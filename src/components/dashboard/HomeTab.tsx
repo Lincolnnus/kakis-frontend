@@ -139,7 +139,8 @@ export function HomeTab() {
       <div className={`w-full max-w-3xl ${!hasConversation ? 'flex-1 flex flex-col justify-center' : ''}`}>
         {!hasConversation && (
           <div className="mb-8 text-center">
-            <h1 className="text-2xl font-semibold text-foreground/80">What story will you create today?</h1>
+            <h1 className="text-3xl font-semibold text-foreground">What story will you bring to life?</h1>
+            <p className="mt-2 text-muted-foreground">From script to screen — let's create something magical together.</p>
           </div>
         )}
         
@@ -155,7 +156,7 @@ export function HomeTab() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Drag/Paste 🖼️ image here to try [Character] & [Style] reference."
+                placeholder="Describe your story, paste a script, or share an idea..."
                 className="min-h-[120px] resize-none border-0 bg-transparent text-base placeholder:text-muted-foreground/60 focus-visible:ring-0"
                 disabled={isLoading}
               />
