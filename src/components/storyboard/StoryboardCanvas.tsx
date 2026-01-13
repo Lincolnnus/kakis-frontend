@@ -13,7 +13,6 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   rectSortingStrategy,
-  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { StoryboardFrame, FrameStyle, Scene, Shot } from '@/types';
 import { SortableFrameCard } from './SortableFrameCard';
@@ -28,10 +27,8 @@ import {
 } from '@/components/ui/select';
 import { 
   Plus, 
-  Wand2, 
   Loader2, 
   Grid3X3, 
-  LayoutList,
   Layers,
   Download,
   Film
@@ -70,7 +67,7 @@ export function StoryboardCanvas({
   onDeleteFrame,
   onReorderFrames
 }: StoryboardCanvasProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'grouped'>('grouped');
+  const [viewMode, setViewMode] = useState<'grid' | 'grouped'>('grid');
   const [globalStyle, setGlobalStyle] = useState<FrameStyle>('illustrated');
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
   const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
@@ -192,10 +189,25 @@ export function StoryboardCanvas({
     });
   };
 
-  const addNewFrame = (sceneId?: string) => {
+  const addNewFrame = (sceneId: string, position: 'before' | 'after' = 'after') => {
+    const sceneFrames = sortedFrames.filter(f => f.sceneId === sceneId);
+    let frameNumber: number;
+    
+    if (position === 'before' && sceneFrames.length > 0) {
+      frameNumber = sceneFrames[0].frameNumber;
+      // Shift all frames after this position
+      sortedFrames.forEach(f => {
+        if (f.frameNumber >= frameNumber) {
+          onUpdateFrame(f.id, { frameNumber: f.frameNumber + 1 });
+        }
+      });
+    } else {
+      frameNumber = sortedFrames.length + 1;
+    }
+    
     const newFrame: Omit<StoryboardFrame, 'id'> = {
-      sceneId: sceneId || scenes[0]?.id || '',
-      frameNumber: sortedFrames.length + 1,
+      sceneId: sceneId,
+      frameNumber,
       description: 'New storyboard frame - add description',
       cameraAngle: 'Medium',
       cameraMovement: 'Static',
@@ -260,16 +272,20 @@ export function StoryboardCanvas({
           <Layers className="mb-4 h-12 w-12 text-muted-foreground/50" />
           <h3 className="mb-2 text-lg font-medium">No Frames Yet</h3>
           <p className="mb-4 text-center text-muted-foreground">
-            Parse a script first or add frames manually
+            Parse a script first to create scenes and frames
           </p>
-          <Button onClick={() => addNewFrame()}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add First Frame
-          </Button>
         </CardContent>
       </Card>
     );
   }
+
+  // Group frames by scene for the grid view
+  const groupedFramesByScene = useMemo(() => {
+    return scenes.map(scene => ({
+      scene,
+      frames: sortedFrames.filter(f => f.sceneId === scene.id)
+    }));
+  }, [scenes, sortedFrames]);
 
   return (
     <div className="space-y-6">
@@ -294,31 +310,22 @@ export function StoryboardCanvas({
           <span className="text-sm font-medium">View:</span>
           <div className="flex rounded-md border">
             <Button
-              variant={viewMode === 'grouped' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="rounded-r-none"
-              onClick={() => setViewMode('grouped')}
-              title="Group by Shot"
-            >
-              <Film className="h-4 w-4" />
-            </Button>
-            <Button
               variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
               size="sm"
-              className="rounded-none"
+              className="rounded-r-none"
               onClick={() => setViewMode('grid')}
               title="Grid View"
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+              variant={viewMode === 'grouped' ? 'secondary' : 'ghost'}
               size="sm"
               className="rounded-l-none"
-              onClick={() => setViewMode('list')}
-              title="List View"
+              onClick={() => setViewMode('grouped')}
+              title="Group by Shot"
             >
-              <LayoutList className="h-4 w-4" />
+              <Film className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -330,30 +337,6 @@ export function StoryboardCanvas({
               Auto-create from Scenes
             </Button>
           )}
-          
-          <Button
-            variant="outline"
-            onClick={generateAllFrames}
-            disabled={isGeneratingAll}
-            className="min-w-[140px]"
-          >
-            {isGeneratingAll ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>{generationProgress.current}/{generationProgress.total}</span>
-              </div>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4" />
-                Generate All
-              </>
-            )}
-          </Button>
-
-          <Button onClick={() => addNewFrame()} className="gradient-primary">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Frame
-          </Button>
         </div>
       </div>
 
@@ -388,7 +371,7 @@ export function StoryboardCanvas({
       >
         <SortableContext
           items={sortedFrames.map(f => f.id)}
-          strategy={viewMode === 'list' ? verticalListSortingStrategy : rectSortingStrategy}
+          strategy={rectSortingStrategy}
         >
           {viewMode === 'grouped' ? (
             // Grouped by Shot view
@@ -441,27 +424,70 @@ export function StoryboardCanvas({
               ))}
             </div>
           ) : (
-            // Grid or List view
-            <div className={
-              viewMode === 'grid'
-                ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                : 'space-y-4'
-            }>
-              {sortedFrames.map((frame) => {
-                const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
-                return (
-                  <SortableFrameCard
-                    key={frame.id}
-                    frame={frame}
-                    onUpdate={onUpdateFrame}
-                    onDelete={onDeleteFrame}
-                    onGenerate={generateImage}
-                    sceneHeading={getSceneForFrame(frame)?.heading}
-                    sceneNumber={sceneNumber}
-                    frameInScene={frameInScene}
-                  />
-                );
-              })}
+            // Grid view - grouped by scene with per-scene add buttons
+            <div className="space-y-6">
+              {groupedFramesByScene.map(({ scene, frames: sceneFrames }) => (
+                <div key={scene.id} className="space-y-3">
+                  {/* Scene Header */}
+                  <div className="flex items-center gap-3 rounded-lg border border-dashed bg-muted/30 px-4 py-2">
+                    <Layers className="h-4 w-4 text-muted-foreground" />
+                    <Badge variant="outline" className="font-mono">
+                      Scene {scene.sceneNumber}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground truncate flex-1">
+                      {scene.heading}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {sceneFrames.length} frame{sceneFrames.length !== 1 ? 's' : ''}
+                    </span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => addNewFrame(scene.id, 'before')}
+                        title="Add frame before"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Before
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => addNewFrame(scene.id, 'after')}
+                        title="Add frame after"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        After
+                      </Button>
+                    </div>
+                  </div>
+                  {/* Frames in scene */}
+                  <div className="grid gap-4 pl-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {sceneFrames.map((frame) => {
+                      const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
+                      return (
+                        <SortableFrameCard
+                          key={frame.id}
+                          frame={frame}
+                          onUpdate={onUpdateFrame}
+                          onDelete={onDeleteFrame}
+                          onGenerate={generateImage}
+                          sceneHeading={scene.heading}
+                          sceneNumber={sceneNumber}
+                          frameInScene={frameInScene}
+                        />
+                      );
+                    })}
+                    {sceneFrames.length === 0 && (
+                      <div className="col-span-full flex items-center justify-center py-8 text-muted-foreground text-sm border border-dashed rounded-lg">
+                        No frames yet. Click "Before" or "After" to add frames.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </SortableContext>
