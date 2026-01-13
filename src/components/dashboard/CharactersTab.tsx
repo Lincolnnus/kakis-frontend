@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Plus, User, Globe, Lock, Mic, Volume2 } from 'lucide-react';
+import { CharacterCreatorDialog } from './CharacterCreatorDialog';
 
 // Predefined public characters from platform
 const publicCharacters = [
@@ -93,8 +94,10 @@ function CharacterCard({ character, isOwned }: { character: Character; isOwned?:
 export function CharactersTab() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [isCreatorOpen, setIsCreatorOpen] = useState(false);
+  const [customCharacters, setCustomCharacters] = useState(myCharacters);
 
-  const categories = ['all', ...new Set([...publicCharacters, ...myCharacters].map(c => c.category))];
+  const categories = ['all', ...new Set([...publicCharacters, ...customCharacters].map(c => c.category))];
 
   const filterCharacters = (characters: Character[]) => {
     return characters.filter(c => {
@@ -105,6 +108,18 @@ export function CharactersTab() {
     });
   };
 
+  const handleCharacterCreate = (newChar: { name: string; description: string; avatar: string | null; voiceProfile: string; category: string }) => {
+    const character: Character = {
+      id: `custom-${Date.now()}`,
+      name: newChar.name,
+      description: newChar.description,
+      category: newChar.category,
+      avatar: newChar.avatar || '/placeholder.svg',
+      voiceProfile: newChar.voiceProfile || 'Default voice',
+    };
+    setCustomCharacters(prev => [character, ...prev]);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -112,10 +127,16 @@ export function CharactersTab() {
           <h2 className="text-2xl font-bold">Character Library</h2>
           <p className="text-muted-foreground">Manage your characters and explore public ones</p>
         </div>
-        <Button className="gradient-primary">
+        <Button className="gradient-primary" onClick={() => setIsCreatorOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Create Character
         </Button>
       </div>
+
+      <CharacterCreatorDialog 
+        open={isCreatorOpen} 
+        onOpenChange={setIsCreatorOpen}
+        onCharacterCreate={handleCharacterCreate}
+      />
 
       {/* Search & Filters */}
       <div className="flex flex-col gap-4 sm:flex-row">
@@ -148,7 +169,7 @@ export function CharactersTab() {
         <TabsList>
           <TabsTrigger value="my-characters" className="gap-2">
             <Lock className="h-4 w-4" />
-            My Characters ({myCharacters.length})
+            My Characters ({customCharacters.length})
           </TabsTrigger>
           <TabsTrigger value="public" className="gap-2">
             <Globe className="h-4 w-4" />
@@ -158,11 +179,11 @@ export function CharactersTab() {
 
         <TabsContent value="my-characters">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filterCharacters(myCharacters).map(character => (
+            {filterCharacters(customCharacters).map(character => (
               <CharacterCard key={character.id} character={character} isOwned />
             ))}
           </div>
-          {filterCharacters(myCharacters).length === 0 && (
+          {filterCharacters(customCharacters).length === 0 && (
             <div className="py-12 text-center">
               <User className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
               <h3 className="mb-2 text-lg font-medium">No characters found</h3>
