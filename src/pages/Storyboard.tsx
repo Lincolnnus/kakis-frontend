@@ -57,7 +57,7 @@ export default function Storyboard() {
             </Link>
             <h1 className="text-2xl font-bold">{project.title} — Storyboard</h1>
             <p className="text-muted-foreground">
-              {projectScenes.length} scenes • {projectFrames.length} frames
+              {projectScenes.length} scenes • {projectShots.length} shots • {projectFrames.length} frames
             </p>
           </div>
 
