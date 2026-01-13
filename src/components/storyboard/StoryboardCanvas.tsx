@@ -189,11 +189,25 @@ export function StoryboardCanvas({
     });
   };
 
-  const addNewFrame = (sceneId: string, position: 'before' | 'after' = 'after') => {
+  const addNewFrame = (sceneId: string, position: 'before' | 'after' | 'at-index' = 'after', insertAfterFrameId?: string) => {
     const sceneFrames = sortedFrames.filter(f => f.sceneId === sceneId);
     let frameNumber: number;
     
-    if (position === 'before' && sceneFrames.length > 0) {
+    if (position === 'at-index' && insertAfterFrameId) {
+      // Insert after a specific frame
+      const targetFrame = sortedFrames.find(f => f.id === insertAfterFrameId);
+      if (targetFrame) {
+        frameNumber = targetFrame.frameNumber + 1;
+        // Shift all frames after this position
+        sortedFrames.forEach(f => {
+          if (f.frameNumber >= frameNumber) {
+            onUpdateFrame(f.id, { frameNumber: f.frameNumber + 1 });
+          }
+        });
+      } else {
+        frameNumber = sortedFrames.length + 1;
+      }
+    } else if (position === 'before' && sceneFrames.length > 0) {
       frameNumber = sceneFrames[0].frameNumber;
       // Shift all frames after this position
       sortedFrames.forEach(f => {
@@ -463,24 +477,35 @@ export function StoryboardCanvas({
                       </Button>
                     </div>
                   </div>
-                  {/* Frames in scene */}
+                  {/* Frames in scene with insert buttons */}
                   <div className="grid gap-4 pl-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {sceneFrames.map((frame) => {
-                      const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
-                      return (
-                        <SortableFrameCard
-                          key={frame.id}
-                          frame={frame}
-                          onUpdate={onUpdateFrame}
-                          onDelete={onDeleteFrame}
-                          onGenerate={generateImage}
-                          sceneHeading={scene.heading}
-                          sceneNumber={sceneNumber}
-                          frameInScene={frameInScene}
-                        />
-                      );
-                    })}
-                    {sceneFrames.length === 0 && (
+                    {sceneFrames.length > 0 ? (
+                      sceneFrames.map((frame, index) => {
+                        const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
+                        const isLastFrame = index === sceneFrames.length - 1;
+                        return (
+                          <div key={frame.id} className="relative group">
+                            <SortableFrameCard
+                              frame={frame}
+                              onUpdate={onUpdateFrame}
+                              onDelete={onDeleteFrame}
+                              onGenerate={generateImage}
+                              sceneHeading={scene.heading}
+                              sceneNumber={sceneNumber}
+                              frameInScene={frameInScene}
+                            />
+                            {/* Insert button after each frame */}
+                            <button
+                              onClick={() => addNewFrame(scene.id, 'at-index', frame.id)}
+                              className="absolute -right-2 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground rounded-full p-1 shadow-md hover:scale-110"
+                              title="Insert frame here"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          </div>
+                        );
+                      })
+                    ) : (
                       <div className="col-span-full flex items-center justify-center py-8 text-muted-foreground text-sm border border-dashed rounded-lg">
                         No frames yet. Click "Before" or "After" to add frames.
                       </div>
