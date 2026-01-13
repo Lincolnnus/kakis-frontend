@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
   DialogContent,
@@ -55,6 +57,7 @@ const PLACEHOLDER_COLORS = [
 export function FrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading, sceneNumber, frameInScene }: FrameCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
   const [editedFrame, setEditedFrame] = useState(frame);
   const [generationPrompt, setGenerationPrompt] = useState(frame.description);
 
@@ -67,46 +70,101 @@ export function FrameCard({ frame, onUpdate, onDelete, onGenerate, sceneHeading,
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setGenerationProgress(0);
+    
+    // Simulate progressive loading
+    const progressInterval = setInterval(() => {
+      setGenerationProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 300);
+    
     try {
       await onGenerate(frame.id, generationPrompt, frame.style);
+      setGenerationProgress(100);
     } finally {
-      setIsGenerating(false);
+      clearInterval(progressInterval);
+      setTimeout(() => {
+        setIsGenerating(false);
+        setGenerationProgress(0);
+      }, 500);
     }
   };
 
   const handleRegenerate = async () => {
     setIsGenerating(true);
+    setGenerationProgress(0);
+    
+    const progressInterval = setInterval(() => {
+      setGenerationProgress(prev => {
+        if (prev >= 90) {
+          clearInterval(progressInterval);
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 300);
+    
     try {
       await onGenerate(frame.id, frame.description, frame.style);
+      setGenerationProgress(100);
     } finally {
-      setIsGenerating(false);
+      clearInterval(progressInterval);
+      setTimeout(() => {
+        setIsGenerating(false);
+        setGenerationProgress(0);
+      }, 500);
     }
   };
+
+  const showGenerating = isGenerating || frame.isGenerating;
 
   return (
     <>
       <Card className="group overflow-hidden transition-all hover:shadow-lg">
         {/* Frame Image Area */}
         <div className="relative aspect-video w-full overflow-hidden bg-muted">
-          {frame.imageUrl ? (
+          {frame.imageUrl && !showGenerating ? (
             <img
               src={frame.imageUrl}
               alt={`Frame ${frame.frameNumber}`}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-opacity duration-500"
             />
+          ) : showGenerating ? (
+            <div className={`flex h-full w-full flex-col items-center justify-center bg-gradient-to-br ${placeholderColor}`}>
+              {/* Skeleton pulse effect */}
+              <div className="absolute inset-0">
+                <Skeleton className="h-full w-full rounded-none opacity-30" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col items-center gap-3 px-4">
+                <div className="relative">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <div className="absolute inset-0 animate-ping">
+                    <Wand2 className="h-8 w-8 text-primary/30" />
+                  </div>
+                </div>
+                
+                <div className="w-32 space-y-1">
+                  <Progress value={generationProgress} className="h-1.5" />
+                  <p className="text-center text-[10px] text-muted-foreground">
+                    {generationProgress < 30 ? 'Preparing...' : 
+                     generationProgress < 60 ? 'Generating...' : 
+                     generationProgress < 90 ? 'Rendering...' : 'Finalizing...'}
+                  </p>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${placeholderColor}`}>
-              {isGenerating || frame.isGenerating ? (
-                <div className="flex flex-col items-center gap-2">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <span className="text-xs text-muted-foreground">Generating...</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2 p-4 text-center">
-                  <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
-                  <span className="text-xs text-muted-foreground">Click Generate</span>
-                </div>
-              )}
+              <div className="flex flex-col items-center gap-2 p-4 text-center">
+                <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+                <span className="text-xs text-muted-foreground">Click Generate</span>
+              </div>
             </div>
           )}
 

@@ -73,6 +73,7 @@ export function StoryboardCanvas({
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'grouped'>('grouped');
   const [globalStyle, setGlobalStyle] = useState<FrameStyle>('illustrated');
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -175,12 +176,16 @@ export function StoryboardCanvas({
     }
 
     setIsGeneratingAll(true);
+    setGenerationProgress({ current: 0, total: framesWithoutImages.length });
     
-    for (const frame of framesWithoutImages) {
+    for (let i = 0; i < framesWithoutImages.length; i++) {
+      const frame = framesWithoutImages[i];
+      setGenerationProgress({ current: i + 1, total: framesWithoutImages.length });
       await generateImage(frame.id, frame.description, globalStyle);
     }
 
     setIsGeneratingAll(false);
+    setGenerationProgress({ current: 0, total: 0 });
     toast({
       title: 'Batch generation complete!',
       description: `Generated ${framesWithoutImages.length} frames.`,
@@ -330,12 +335,13 @@ export function StoryboardCanvas({
             variant="outline"
             onClick={generateAllFrames}
             disabled={isGeneratingAll}
+            className="min-w-[140px]"
           >
             {isGeneratingAll ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{generationProgress.current}/{generationProgress.total}</span>
+              </div>
             ) : (
               <>
                 <Wand2 className="mr-2 h-4 w-4" />
@@ -350,6 +356,29 @@ export function StoryboardCanvas({
           </Button>
         </div>
       </div>
+
+      {/* Batch Generation Progress Banner */}
+      {isGeneratingAll && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="flex items-center gap-4 py-3">
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            <div className="flex-1">
+              <div className="mb-1 flex items-center justify-between text-sm">
+                <span className="font-medium">Generating frames...</span>
+                <span className="text-muted-foreground">
+                  {generationProgress.current} of {generationProgress.total}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-muted">
+                <div 
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${(generationProgress.current / generationProgress.total) * 100}%` }}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Frames Grid/List with Drag and Drop */}
       <DndContext
