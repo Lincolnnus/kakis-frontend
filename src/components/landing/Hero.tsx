@@ -1,8 +1,16 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+
+// Import storyboard thumbnails for the hover preview
+import lunaThumb from '@/assets/thumbnails/luna-starkeeper-thumb.png';
+import felixThumb from '@/assets/thumbnails/felix-fox-thumb.png';
+import robotThumb from '@/assets/thumbnails/robot-garden-thumb.png';
 
 export function Hero() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <section className="relative overflow-hidden gradient-hero">
       <div className="container mx-auto px-4 py-24 md:py-32">
@@ -45,16 +53,78 @@ export function Hero() {
           </p>
         </div>
 
-        {/* Hero Image Placeholder */}
+        {/* Hero Image with Hover Effect */}
         <div className="mx-auto mt-16 max-w-5xl">
-          <div className="relative rounded-xl border bg-card shadow-2xl">
-            <div className="aspect-video w-full overflow-hidden rounded-xl bg-muted">
-              <div className="flex h-full items-center justify-center">
+          <div 
+            className="relative rounded-xl border bg-card shadow-2xl cursor-pointer group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <div className="aspect-video w-full overflow-hidden rounded-xl bg-muted relative">
+              {/* Default State - Play Button */}
+              <div 
+                className={`absolute inset-0 flex items-center justify-center bg-muted z-10 transition-opacity duration-500 ${
+                  isHovered ? 'opacity-0' : 'opacity-100'
+                }`}
+              >
                 <div className="text-center">
-                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 group-hover:scale-110 transition-transform">
                     <Play className="h-8 w-8 text-primary" />
                   </div>
                   <p className="text-muted-foreground">Product Demo Preview</p>
+                </div>
+              </div>
+
+              {/* Hover State - Storyboard Collage */}
+              <div 
+                className={`absolute inset-0 transition-opacity duration-500 ${
+                  isHovered ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                {/* Background gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 z-10" />
+                
+                {/* Storyboard grid */}
+                <div className="grid grid-cols-3 gap-2 p-4 h-full">
+                  <div className="relative rounded-lg overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img 
+                      src={lunaThumb} 
+                      alt="Luna & the Starkeeper" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <p className="text-white text-xs font-medium truncate">Luna & the Starkeeper</p>
+                    </div>
+                  </div>
+                  <div className="relative rounded-lg overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img 
+                      src={felixThumb} 
+                      alt="Felix the Fox" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <p className="text-white text-xs font-medium truncate">Felix the Fox</p>
+                    </div>
+                  </div>
+                  <div className="relative rounded-lg overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+                    <img 
+                      src={robotThumb} 
+                      alt="Robot's Garden" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <p className="text-white text-xs font-medium truncate">Robot's Garden</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating UI elements for visual interest */}
+                <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                  <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                  <span className="text-xs font-medium">AI Generated</span>
                 </div>
               </div>
             </div>
