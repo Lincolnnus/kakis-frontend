@@ -42,6 +42,7 @@ export interface DialogueLine {
 export interface StoryboardFrame {
   id: string;
   sceneId: string;
+  shotId?: string; // Optional: groups multiple frames within the same shot
   frameNumber: number;
   imageUrl?: string;
   description: string;

@@ -284,6 +284,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-1-1',
     sceneId: 'scene-1-1',
+    shotId: 'shot-1-1-1',
     frameNumber: 1,
     imageUrl: lunaFrame1,
     description: 'Wide shot of Luna\'s cozy attic bedroom. Moonlight streams through circular window. Glow stars on ceiling.',
@@ -296,6 +297,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-1-2',
     sceneId: 'scene-1-1',
+    shotId: 'shot-1-1-2',
     frameNumber: 2,
     imageUrl: lunaFrame2,
     description: 'Close-up of Luna\'s face, eyes open, looking up at ceiling stars. Expression of wonder and loneliness.',
@@ -309,6 +311,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-1-3',
     sceneId: 'scene-1-1',
+    shotId: 'shot-1-1-3',
     frameNumber: 3,
     imageUrl: lunaFrame3,
     description: 'Luna sits up in bed, looking toward the window. Real stars visible outside, contrasting with plastic ones.',
@@ -322,6 +325,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-1-4',
     sceneId: 'scene-1-1',
+    shotId: 'shot-1-1-3', // Same shot as previous - grouped together
     frameNumber: 4,
     imageUrl: lunaFrame4,
     description: 'Shooting star streaks across the sky through the window. Luna\'s eyes light up with excitement.',
@@ -336,6 +340,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-2-1',
     sceneId: 'scene-1-2',
+    shotId: 'shot-1-2-1',
     frameNumber: 5,
     imageUrl: lunaFrame5,
     description: 'Luna climbing through window onto moonlit rooftop. Town visible below, vast starry sky above.',
@@ -348,6 +353,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-2-2',
     sceneId: 'scene-1-2',
+    shotId: 'shot-1-2-2',
     frameNumber: 6,
     imageUrl: lunaFrame6,
     description: 'Luna discovers the mysterious glowing ladder stretching up into the clouds.',
@@ -361,6 +367,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-2-3',
     sceneId: 'scene-1-2',
+    shotId: 'shot-1-2-2', // Same shot - grouped with ladder discovery
     frameNumber: 7,
     imageUrl: lunaFrame7,
     description: 'Luna\'s small hand grasps the first rung. Determination on her face.',
@@ -375,6 +382,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-3-1',
     sceneId: 'scene-1-3',
+    shotId: 'shot-1-3-1',
     frameNumber: 8,
     imageUrl: lunaFrame8,
     description: 'Wide establishing shot of cloud workshop. Floating lanterns, star gardens, The Starkeeper\'s silhouette.',
@@ -387,6 +395,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-3-2',
     sceneId: 'scene-1-3',
+    shotId: 'shot-1-3-1', // Same shot - part of reveal
     frameNumber: 9,
     imageUrl: lunaFrame9,
     description: 'Luna emerges from clouds, jaw dropped, taking in the impossible workshop.',
@@ -399,6 +408,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-3-3',
     sceneId: 'scene-1-3',
+    shotId: 'shot-1-3-2',
     frameNumber: 10,
     imageUrl: lunaFrame10,
     description: 'The Starkeeper turns - his body is made of flowing constellations, ancient and kind.',
@@ -412,6 +422,7 @@ export const mockFrames: StoryboardFrame[] = [
   {
     id: 'frame-1-3-4',
     sceneId: 'scene-1-3',
+    shotId: 'shot-1-3-2', // Same shot - dialogue continues
     frameNumber: 11,
     imageUrl: lunaFrame11,
     description: 'Two-shot of Luna and Starkeeper, size contrast emphasized. Luna looks tiny but brave.',

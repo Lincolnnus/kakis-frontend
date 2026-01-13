@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -15,7 +15,7 @@ import {
   rectSortingStrategy,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { StoryboardFrame, FrameStyle, Scene } from '@/types';
+import { StoryboardFrame, FrameStyle, Scene, Shot } from '@/types';
 import { SortableFrameCard } from './SortableFrameCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -33,13 +33,16 @@ import {
   Grid3X3, 
   LayoutList,
   Layers,
-  Download
+  Download,
+  Film
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 interface StoryboardCanvasProps {
   frames: StoryboardFrame[];
   scenes: Scene[];
+  shots?: Shot[];
   projectId: string;
   onAddFrame: (frame: Omit<StoryboardFrame, 'id'>) => void;
   onUpdateFrame: (id: string, updates: Partial<StoryboardFrame>) => void;
@@ -60,13 +63,14 @@ const MOCK_IMAGES = [
 export function StoryboardCanvas({ 
   frames, 
   scenes, 
+  shots = [],
   projectId, 
   onAddFrame, 
   onUpdateFrame, 
   onDeleteFrame,
   onReorderFrames
 }: StoryboardCanvasProps) {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'grouped'>('grouped');
   const [globalStyle, setGlobalStyle] = useState<FrameStyle>('illustrated');
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
   const { toast } = useToast();
@@ -84,6 +88,36 @@ export function StoryboardCanvas({
 
   const sortedFrames = [...frames].sort((a, b) => a.frameNumber - b.frameNumber);
 
+  // Group frames by shot
+  const groupedFramesByShot = useMemo(() => {
+    const groups: { shotId: string | null; shot: Shot | null; frames: StoryboardFrame[] }[] = [];
+    const framesWithShots = sortedFrames.filter(f => f.shotId);
+    const framesWithoutShots = sortedFrames.filter(f => !f.shotId);
+    
+    // Group frames by their shotId
+    const shotGroups = new Map<string, StoryboardFrame[]>();
+    framesWithShots.forEach(frame => {
+      const existing = shotGroups.get(frame.shotId!) || [];
+      existing.push(frame);
+      shotGroups.set(frame.shotId!, existing);
+    });
+    
+    // Convert to array with shot info
+    shotGroups.forEach((shotFrames, shotId) => {
+      const shot = shots.find(s => s.id === shotId) || null;
+      groups.push({ shotId, shot, frames: shotFrames });
+    });
+    
+    // Sort groups by first frame number
+    groups.sort((a, b) => a.frames[0].frameNumber - b.frames[0].frameNumber);
+    
+    // Add ungrouped frames
+    if (framesWithoutShots.length > 0) {
+      groups.push({ shotId: null, shot: null, frames: framesWithoutShots });
+    }
+    
+    return groups;
+  }, [sortedFrames, shots]);
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -255,10 +289,20 @@ export function StoryboardCanvas({
           <span className="text-sm font-medium">View:</span>
           <div className="flex rounded-md border">
             <Button
-              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+              variant={viewMode === 'grouped' ? 'secondary' : 'ghost'}
               size="sm"
               className="rounded-r-none"
+              onClick={() => setViewMode('grouped')}
+              title="Group by Shot"
+            >
+              <Film className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+              size="sm"
+              className="rounded-none"
               onClick={() => setViewMode('grid')}
+              title="Grid View"
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -267,6 +311,7 @@ export function StoryboardCanvas({
               size="sm"
               className="rounded-l-none"
               onClick={() => setViewMode('list')}
+              title="List View"
             >
               <LayoutList className="h-4 w-4" />
             </Button>
@@ -314,29 +359,82 @@ export function StoryboardCanvas({
       >
         <SortableContext
           items={sortedFrames.map(f => f.id)}
-          strategy={viewMode === 'grid' ? rectSortingStrategy : verticalListSortingStrategy}
+          strategy={viewMode === 'list' ? verticalListSortingStrategy : rectSortingStrategy}
         >
-          <div className={
-            viewMode === 'grid'
-              ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              : 'space-y-4'
-          }>
-            {sortedFrames.map((frame) => {
-              const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
-              return (
-                <SortableFrameCard
-                  key={frame.id}
-                  frame={frame}
-                  onUpdate={onUpdateFrame}
-                  onDelete={onDeleteFrame}
-                  onGenerate={generateImage}
-                  sceneHeading={getSceneForFrame(frame)?.heading}
-                  sceneNumber={sceneNumber}
-                  frameInScene={frameInScene}
-                />
-              );
-            })}
-          </div>
+          {viewMode === 'grouped' ? (
+            // Grouped by Shot view
+            <div className="space-y-6">
+              {groupedFramesByShot.map((group) => (
+                <div key={group.shotId || 'ungrouped'} className="space-y-3">
+                  {/* Shot Header */}
+                  <div className="flex items-center gap-3 rounded-lg border border-dashed bg-muted/30 px-4 py-2">
+                    <Film className="h-4 w-4 text-muted-foreground" />
+                    {group.shot ? (
+                      <>
+                        <Badge variant="outline" className="font-mono">
+                          Shot {group.shot.shotNumber}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {group.shot.framing} • {group.shot.cameraAngle.replace('-', ' ')} • {group.shot.lensType}
+                        </span>
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {group.frames.length} frame{group.frames.length !== 1 ? 's' : ''}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-sm text-muted-foreground">Ungrouped Frames</span>
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {group.frames.length} frame{group.frames.length !== 1 ? 's' : ''}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {/* Frames in shot */}
+                  <div className="grid gap-4 pl-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {group.frames.map((frame) => {
+                      const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
+                      return (
+                        <SortableFrameCard
+                          key={frame.id}
+                          frame={frame}
+                          onUpdate={onUpdateFrame}
+                          onDelete={onDeleteFrame}
+                          onGenerate={generateImage}
+                          sceneHeading={getSceneForFrame(frame)?.heading}
+                          sceneNumber={sceneNumber}
+                          frameInScene={frameInScene}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            // Grid or List view
+            <div className={
+              viewMode === 'grid'
+                ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                : 'space-y-4'
+            }>
+              {sortedFrames.map((frame) => {
+                const { sceneNumber, frameInScene } = getFrameSceneInfo(frame);
+                return (
+                  <SortableFrameCard
+                    key={frame.id}
+                    frame={frame}
+                    onUpdate={onUpdateFrame}
+                    onDelete={onDeleteFrame}
+                    onGenerate={generateImage}
+                    sceneHeading={getSceneForFrame(frame)?.heading}
+                    sceneNumber={sceneNumber}
+                    frameInScene={frameInScene}
+                  />
+                );
+              })}
+            </div>
+          )}
         </SortableContext>
       </DndContext>
 
