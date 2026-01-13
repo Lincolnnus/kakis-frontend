@@ -32,9 +32,11 @@ import {
   Upload,
   Wand2,
   Repeat,
-  Shuffle
+  Shuffle,
+  Layers
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { AudioTimeline } from './AudioTimeline';
 
 interface AnimaticPlayerProps {
   frames: StoryboardFrame[];
@@ -502,8 +504,12 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
       <Tabs defaultValue="timeline" className="rounded-lg border bg-card">
         <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
           <TabsTrigger value="timeline" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+            <Layers className="mr-2 h-4 w-4" />
+            Multi-Track Timeline
+          </TabsTrigger>
+          <TabsTrigger value="frames" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
             <Clock className="mr-2 h-4 w-4" />
-            Timeline
+            Frame Editor
           </TabsTrigger>
           <TabsTrigger value="audio" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
             <Volume2 className="mr-2 h-4 w-4" />
@@ -511,11 +517,19 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
           </TabsTrigger>
           <TabsTrigger value="music" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
             <Music className="mr-2 h-4 w-4" />
-            Music & SFX
+            Generate Audio
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="timeline" className="p-4">
+          <AudioTimeline
+            frames={sortedFrames}
+            currentIndex={currentIndex}
+            onFrameClick={goToFrame}
+          />
+        </TabsContent>
+
+        <TabsContent value="frames" className="p-4">
           <div className="flex gap-2 overflow-x-auto pb-2">
             {sortedFrames.map((frame, index) => (
               <div
