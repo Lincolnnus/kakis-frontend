@@ -45,7 +45,7 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
   return (
     <Sidebar collapsible="icon" className="border-r">
       {/* Logo Header */}
-      <SidebarHeader className="border-b p-4">
+      <SidebarHeader className="border-b px-3 py-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
             <Film className="h-5 w-5 text-primary-foreground" />
