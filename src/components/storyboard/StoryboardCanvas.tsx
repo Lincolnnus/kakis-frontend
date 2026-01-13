@@ -454,28 +454,6 @@ export function StoryboardCanvas({
                     <span className="text-xs text-muted-foreground">
                       {sceneFrames.length} frame{sceneFrames.length !== 1 ? 's' : ''}
                     </span>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs"
-                        onClick={() => addNewFrame(scene.id, 'before')}
-                        title="Add frame before"
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        Before
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs"
-                        onClick={() => addNewFrame(scene.id, 'after')}
-                        title="Add frame after"
-                      >
-                        <Plus className="h-3 w-3 mr-1" />
-                        After
-                      </Button>
-                    </div>
                   </div>
                   {/* Frames in scene with insert buttons */}
                   <div className="grid gap-4 pl-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -497,10 +475,10 @@ export function StoryboardCanvas({
                             {/* Insert button after each frame */}
                             <button
                               onClick={() => addNewFrame(scene.id, 'at-index', frame.id)}
-                              className="absolute -right-2 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground rounded-full p-1 shadow-md hover:scale-110"
+                              className="absolute -right-3 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 opacity-0 group-hover:opacity-100 transition-all bg-primary text-primary-foreground rounded-full p-2 shadow-lg hover:scale-110 hover:bg-primary/90"
                               title="Insert frame here"
                             >
-                              <Plus className="h-3 w-3" />
+                              <Plus className="h-5 w-5" />
                             </button>
                           </div>
                         );
