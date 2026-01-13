@@ -32,7 +32,7 @@ export function Header({ children }: HeaderProps) {
         <div className="flex items-center">
           {children}
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Film className="h-5 w-5 text-primary-foreground" />
             </div>
