@@ -3,21 +3,15 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useProject } from '@/contexts/ProjectContext';
-import { Plus, Search, Film, Calendar, Layers, MoreVertical, Trash2 } from 'lucide-react';
+import { Search, Film, Calendar, Layers, MoreVertical, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function ProjectsTab() {
-  const { projects, createProject, deleteProject } = useProject();
+  const { projects, deleteProject } = useProject();
   const [search, setSearch] = useState('');
-  const [newTitle, setNewTitle] = useState('');
-  const [newDescription, setNewDescription] = useState('');
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const { toast } = useToast();
@@ -26,14 +20,6 @@ export function ProjectsTab() {
     p.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleCreateProject = () => {
-    if (!newTitle.trim()) return;
-    createProject(newTitle, newDescription);
-    toast({ title: 'Project created!', description: `"${newTitle}" is ready to go.` });
-    setNewTitle('');
-    setNewDescription('');
-    setDialogOpen(false);
-  };
 
   const handleDeleteProject = () => {
     if (!projectToDelete) return;
@@ -64,33 +50,6 @@ export function ProjectsTab() {
           <h2 className="text-2xl font-bold">My Projects</h2>
           <p className="text-muted-foreground">Manage your storyboard projects</p>
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gradient-primary">
-              <Plus className="mr-2 h-4 w-4" /> New Project
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Project</DialogTitle>
-              <DialogDescription>Start a new storyboard project</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Project Title</Label>
-                <Input id="title" placeholder="My Awesome Film" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" placeholder="A brief description..." value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-              <Button className="gradient-primary" onClick={handleCreateProject}>Create Project</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
 
       <div className="relative max-w-md">
