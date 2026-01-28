@@ -63,7 +63,7 @@ export function ExportPanel({ projectTitle, frameCount, shotCount }: ExportPanel
   };
 
   const handleCopyLink = async () => {
-    const shareUrl = `https://storyboardai.app/share/${Math.random().toString(36).substring(7)}`;
+    const shareUrl = `https://kakis.ai/share/${Math.random().toString(36).substring(7)}`;
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -183,7 +183,7 @@ export function ExportPanel({ projectTitle, frameCount, shotCount }: ExportPanel
           <div className="flex gap-2">
             <div className="flex-1 rounded-lg border bg-muted px-4 py-2">
               <span className="text-sm text-muted-foreground">
-                https://storyboardai.app/share/...
+                https://kakis.ai/share/...
               </span>
             </div>
             <Button onClick={handleCopyLink}>

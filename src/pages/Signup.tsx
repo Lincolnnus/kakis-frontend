@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Film, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import kakisLogo from '@/assets/kakis-logo.png';
 
 export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +18,7 @@ export default function Signup() {
     try {
       await loginWithGoogle();
       toast({
-        title: 'Welcome to StoryboardAI!',
+        title: 'Welcome to Kakis AI!',
         description: 'Your account has been created.',
       });
       navigate('/dashboard');
@@ -37,10 +38,8 @@ export default function Signup() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="mb-8 flex items-center justify-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <Film className="h-6 w-6 text-primary-foreground" />
-          </div>
-          <span className="text-2xl font-bold">StoryboardAI</span>
+          <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
+          <span className="text-2xl font-bold">Kakis AI</span>
         </Link>
 
         <Card>

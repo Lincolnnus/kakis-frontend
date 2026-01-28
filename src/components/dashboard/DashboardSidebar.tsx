@@ -1,5 +1,6 @@
-import { Home, FolderKanban, Users, Film, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { Home, FolderKanban, Users, CreditCard, LogOut, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import kakisLogo from '@/assets/kakis-logo.png';
 import {
   Sidebar,
   SidebarContent,
@@ -47,10 +48,8 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
       {/* Logo Header */}
       <SidebarHeader className="border-b px-3 py-4">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <Film className="h-5 w-5 text-primary-foreground" />
-          </div>
-          {!isCollapsed && <span className="text-xl font-bold">StoryboardAI</span>}
+          <img src={kakisLogo} alt="Kakis AI" className="h-8 w-8 shrink-0" />
+          {!isCollapsed && <span className="text-xl font-bold">Kakis AI</span>}
         </Link>
       </SidebarHeader>
 
