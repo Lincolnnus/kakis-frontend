@@ -38,7 +38,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link to="/" className="mb-8 flex items-center justify-center gap-2">
-          <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
+          <img src={kakisLogo} alt="Kakis AI" className="h-12 w-12" />
           <span className="text-2xl font-bold">Kakis AI</span>
         </Link>
 

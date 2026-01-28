@@ -48,7 +48,7 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
       {/* Logo Header */}
       <SidebarHeader className="border-b px-3 py-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src={kakisLogo} alt="Kakis AI" className="h-8 w-8 shrink-0" />
+          <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10 shrink-0" />
           {!isCollapsed && <span className="text-xl font-bold">Kakis AI</span>}
         </Link>
       </SidebarHeader>

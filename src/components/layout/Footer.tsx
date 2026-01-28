@@ -9,7 +9,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2">
-              <img src={kakisLogo} alt="Kakis AI" className="h-8 w-8" />
+              <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
               <span className="text-xl font-bold">Kakis AI</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
