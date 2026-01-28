@@ -11,7 +11,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
@@ -25,6 +24,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { WorkspaceSwitcher } from './WorkspaceSwitcher';
+import { Separator } from '@/components/ui/separator';
 
 const navItems = [
   { title: 'Home', value: 'home', icon: Home },
@@ -47,12 +48,20 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
   return (
     <Sidebar collapsible="icon" className="border-r">
       {/* Logo Header */}
-      <SidebarHeader className="border-b px-3 py-4">
+      <SidebarHeader className="px-3 py-4">
         <Link to="/" className="flex items-center gap-2">
           <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10 shrink-0" />
           {!isCollapsed && <span className="text-xl font-bold">Kakis AI</span>}
         </Link>
       </SidebarHeader>
+
+      {/* Workspace Switcher */}
+      {!isCollapsed && (
+        <div className="px-3 pb-2">
+          <WorkspaceSwitcher />
+          <Separator className="mt-3" />
+        </div>
+      )}
 
       {/* Navigation */}
       <SidebarContent className="pt-4">

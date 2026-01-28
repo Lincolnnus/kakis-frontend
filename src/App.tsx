@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProjectProvider } from "@/contexts/ProjectContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -25,29 +26,31 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <SubscriptionProvider>
-        <ProjectProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/project/:projectId" element={<Project />} />
-                <Route path="/project/:projectId/storyboard" element={<Storyboard />} />
-                <Route path="/project/:projectId/shots" element={<ShotList />} />
-                <Route path="/project/:projectId/animatic" element={<Animatic />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/billing" element={<Billing />} />
-                <Route path="/about" element={<About />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ProjectProvider>
+        <WorkspaceProvider>
+          <ProjectProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/project/:projectId" element={<Project />} />
+                  <Route path="/project/:projectId/storyboard" element={<Storyboard />} />
+                  <Route path="/project/:projectId/shots" element={<ShotList />} />
+                  <Route path="/project/:projectId/animatic" element={<Animatic />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/billing" element={<Billing />} />
+                  <Route path="/about" element={<About />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </ProjectProvider>
+        </WorkspaceProvider>
       </SubscriptionProvider>
     </AuthProvider>
   </QueryClientProvider>
