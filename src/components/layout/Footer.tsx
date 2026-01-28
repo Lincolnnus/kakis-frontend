@@ -50,7 +50,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} StoryboardAI. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Kakis AI. All rights reserved.</p>
         </div>
       </div>
     </footer>
