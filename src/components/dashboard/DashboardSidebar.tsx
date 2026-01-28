@@ -23,8 +23,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { Separator } from '@/components/ui/separator';
 
 const navItems = [
@@ -43,7 +43,9 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
   const { user, logout } = useAuth();
-  const { currentPlan } = useSubscription();
+  const { currentWorkspace } = useWorkspace();
+
+  const planLabel = currentWorkspace.plan.charAt(0).toUpperCase() + currentWorkspace.plan.slice(1);
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -104,7 +106,7 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
                   <div className="flex flex-col items-start overflow-hidden">
                     <span className="truncate text-sm font-medium">{user?.name}</span>
                     <Badge variant="secondary" className="text-xs">
-                      {currentPlan.name}
+                      {planLabel}
                     </Badge>
                   </div>
                 </div>
@@ -123,7 +125,7 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
               <Link to="/billing" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Billing
-                {currentPlan.id === 'free' && (
+                {currentWorkspace.plan === 'free' && (
                   <Badge className="ml-auto text-xs" variant="secondary">
                     <Sparkles className="mr-1 h-3 w-3" />
                     Upgrade
