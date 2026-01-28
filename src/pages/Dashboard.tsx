@@ -4,6 +4,7 @@ import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { ProjectsTab } from '@/components/dashboard/ProjectsTab';
 import { HomeTab } from '@/components/dashboard/HomeTab';
 import { CharactersTab } from '@/components/dashboard/CharactersTab';
+import { TeamTab } from '@/components/dashboard/TeamTab';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('home');
@@ -16,6 +17,8 @@ export default function Dashboard() {
         return <ProjectsTab />;
       case 'characters':
         return <CharactersTab />;
+      case 'team':
+        return <TeamTab />;
       default:
         return <HomeTab />;
     }
