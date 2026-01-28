@@ -52,6 +52,9 @@ export function Header({ children }: HeaderProps) {
               </a>
             </>
           )}
+          <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">
+            About
+          </Link>
           
           {isAuthenticated ? (
             <>

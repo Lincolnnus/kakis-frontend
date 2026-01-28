@@ -16,6 +16,7 @@ import ShotList from "./pages/ShotList";
 import Animatic from "./pages/Animatic";
 import Checkout from "./pages/Checkout";
 import Billing from "./pages/Billing";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/project/:projectId/animatic" element={<Animatic />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/billing" element={<Billing />} />
+                <Route path="/about" element={<About />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
