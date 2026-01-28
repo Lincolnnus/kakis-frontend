@@ -11,8 +11,9 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { Film, Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
+import { Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
 import { useState, ReactNode } from 'react';
+import kakisLogo from '@/assets/kakis-logo.png';
 
 interface HeaderProps {
   children?: ReactNode;
@@ -33,9 +34,7 @@ export function Header({ children }: HeaderProps) {
           {children}
           {/* Logo */}
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Film className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <img src={kakisLogo} alt="Kakis AI" className="h-8 w-8" />
             <span className="text-xl font-bold">Kakis AI</span>
           </Link>
         </div>
