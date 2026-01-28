@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useSubscription, plans, PlanType } from '@/contexts/SubscriptionContext';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useToast } from '@/hooks/use-toast';
 import { 
   CreditCard, 
@@ -27,12 +28,15 @@ import {
   Zap,
   Calendar,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  User,
+  Users
 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function Billing() {
   const { toast } = useToast();
+  const { currentWorkspace, isPersonal } = useWorkspace();
   const { 
     subscription, 
     currentPlan, 
@@ -44,6 +48,9 @@ export default function Billing() {
   } = useSubscription();
   
   const [selectedUpgrade, setSelectedUpgrade] = useState<PlanType | null>(null);
+  
+  // Use workspace plan for display
+  const workspacePlan = plans.find(p => p.id === currentWorkspace.plan) || plans[0];
 
   const handleCancelSubscription = async () => {
     await cancelSubscription();
@@ -71,14 +78,14 @@ export default function Billing() {
   };
 
   const remainingGenerations = getRemainingGenerations();
-  const usagePercentage = currentPlan.limits.aiGenerations === -1 
+  const usagePercentage = workspacePlan.limits.aiGenerations === -1 
     ? 0 
-    : ((currentPlan.limits.aiGenerations - remainingGenerations) / currentPlan.limits.aiGenerations) * 100;
+    : ((workspacePlan.limits.aiGenerations - remainingGenerations) / workspacePlan.limits.aiGenerations) * 100;
 
   const invoices = [
-    { id: 'inv_001', date: new Date('2026-01-01'), amount: 29, status: 'paid' },
-    { id: 'inv_002', date: new Date('2025-12-01'), amount: 29, status: 'paid' },
-    { id: 'inv_003', date: new Date('2025-11-01'), amount: 29, status: 'paid' },
+    { id: 'inv_001', date: new Date('2026-01-01'), amount: workspacePlan.price, status: 'paid' },
+    { id: 'inv_002', date: new Date('2025-12-01'), amount: workspacePlan.price, status: 'paid' },
+    { id: 'inv_003', date: new Date('2025-11-01'), amount: workspacePlan.price, status: 'paid' },
   ];
 
   return (
@@ -94,7 +101,20 @@ export default function Billing() {
           Back to Dashboard
         </Link>
 
-        <h1 className="mb-8 text-3xl font-bold">Billing & Subscription</h1>
+        <div className="mb-8 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Billing & Subscription</h1>
+          <div className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2">
+            {isPersonal ? (
+              <User className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Users className="h-4 w-4 text-muted-foreground" />
+            )}
+            <span className="text-sm font-medium">{currentWorkspace.name}</span>
+            <Badge variant="secondary" className="text-xs">
+              {workspacePlan.name}
+            </Badge>
+          </div>
+        </div>
 
         <div className="space-y-8">
           {/* Current Plan */}
@@ -106,22 +126,24 @@ export default function Billing() {
                     <Sparkles className="h-5 w-5 text-primary" />
                     Current Plan
                   </CardTitle>
-                  <CardDescription>Manage your subscription and billing</CardDescription>
+                  <CardDescription>
+                    {isPersonal ? 'Your personal subscription' : `Billing for ${currentWorkspace.name}`}
+                  </CardDescription>
                 </div>
                 <Badge 
                   variant={subscription?.status === 'active' ? 'default' : 'secondary'}
                   className="capitalize"
                 >
-                  {subscription?.status || 'Free'}
+                  {subscription?.status || 'Active'}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4">
                 <div>
-                  <h3 className="text-xl font-bold">{currentPlan.name}</h3>
+                  <h3 className="text-xl font-bold">{workspacePlan.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    ${currentPlan.price}/{currentPlan.period}
+                    ${workspacePlan.price}/{workspacePlan.period}
                   </p>
                 </div>
                 {subscription?.cancelAtPeriodEnd && (
@@ -145,7 +167,7 @@ export default function Billing() {
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Resume Subscription
                   </Button>
-                ) : currentPlan.id !== 'free' ? (
+                ) : workspacePlan.id !== 'free' ? (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline">Cancel Subscription</Button>
@@ -154,7 +176,7 @@ export default function Billing() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Cancel subscription?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          You'll lose access to {currentPlan.name} features at the end of your billing period.
+                          You'll lose access to {workspacePlan.name} features at the end of your billing period.
                           You can resume anytime before then.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
@@ -187,7 +209,7 @@ export default function Billing() {
                     {remainingGenerations === -1 ? (
                       'Unlimited'
                     ) : (
-                      `${currentPlan.limits.aiGenerations - remainingGenerations} / ${currentPlan.limits.aiGenerations}`
+                      `${workspacePlan.limits.aiGenerations - remainingGenerations} / ${workspacePlan.limits.aiGenerations}`
                     )}
                   </span>
                 </div>
@@ -215,12 +237,12 @@ export default function Billing() {
                   <div
                     key={plan.id}
                     className={`relative rounded-lg border p-4 ${
-                      plan.id === currentPlan.id 
+                      plan.id === workspacePlan.id 
                         ? 'border-primary bg-primary/5' 
                         : 'hover:border-primary/50'
                     }`}
                   >
-                    {plan.id === currentPlan.id && (
+                    {plan.id === workspacePlan.id && (
                       <Badge className="absolute -top-2 right-2">Current</Badge>
                     )}
                     <h4 className="font-semibold">{plan.name}</h4>
@@ -236,18 +258,18 @@ export default function Billing() {
                         </li>
                       ))}
                     </ul>
-                    {plan.id !== currentPlan.id && (
+                    {plan.id !== workspacePlan.id && (
                       <Button 
                         size="sm" 
                         className="mt-4 w-full"
-                        variant={plan.price > currentPlan.price ? 'default' : 'outline'}
+                        variant={plan.price > workspacePlan.price ? 'default' : 'outline'}
                         onClick={() => plan.id === 'free' 
                           ? handleChangePlan(plan.id)
                           : setSelectedUpgrade(plan.id)
                         }
                         disabled={isLoading}
                       >
-                        {plan.price > currentPlan.price ? 'Upgrade' : 'Downgrade'}
+                        {plan.price > workspacePlan.price ? 'Upgrade' : 'Downgrade'}
                       </Button>
                     )}
                   </div>
@@ -265,7 +287,7 @@ export default function Billing() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {currentPlan.id === 'free' ? (
+          {workspacePlan.id === 'free' ? (
                 <p className="text-sm text-muted-foreground">
                   No payment method on file. Add one when you upgrade.
                 </p>
@@ -287,7 +309,7 @@ export default function Billing() {
           </Card>
 
           {/* Invoices */}
-          {currentPlan.id !== 'free' && (
+          {workspacePlan.id !== 'free' && (
             <Card>
               <CardHeader>
                 <CardTitle>Billing History</CardTitle>

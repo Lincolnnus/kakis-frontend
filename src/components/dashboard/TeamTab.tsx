@@ -21,78 +21,11 @@ import {
   Settings,
   Sparkles,
   Check,
-  Clock
+  Clock,
+  User
 } from 'lucide-react';
 import { InviteMemberDialog } from './InviteMemberDialog';
-
-interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  role: 'owner' | 'admin' | 'member' | 'viewer';
-  status: 'active' | 'pending';
-  joinedAt: string;
-}
-
-interface Organization {
-  id: string;
-  name: string;
-  plan: 'free' | 'pro' | 'studio';
-  memberCount: number;
-  projectCount: number;
-}
-
-const mockOrganization: Organization = {
-  id: 'org-1',
-  name: 'Creative Studio',
-  plan: 'pro',
-  memberCount: 5,
-  projectCount: 12,
-};
-
-const mockMembers: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Alex Director',
-    email: 'alex@creativestudio.com',
-    role: 'owner',
-    status: 'active',
-    joinedAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'Jordan Lee',
-    email: 'jordan@creativestudio.com',
-    role: 'admin',
-    status: 'active',
-    joinedAt: '2024-02-20',
-  },
-  {
-    id: '3',
-    name: 'Sam Rivera',
-    email: 'sam@creativestudio.com',
-    role: 'member',
-    status: 'active',
-    joinedAt: '2024-03-10',
-  },
-  {
-    id: '4',
-    name: 'Taylor Chen',
-    email: 'taylor@creativestudio.com',
-    role: 'member',
-    status: 'active',
-    joinedAt: '2024-04-05',
-  },
-  {
-    id: '5',
-    name: 'Morgan Kim',
-    email: 'morgan@example.com',
-    role: 'viewer',
-    status: 'pending',
-    joinedAt: '2024-06-01',
-  },
-];
+import { useWorkspace, TeamMember } from '@/contexts/WorkspaceContext';
 
 const roleConfig = {
   owner: { label: 'Owner', icon: Crown, variant: 'default' as const, color: 'text-amber-500' },
@@ -103,16 +36,90 @@ const roleConfig = {
 
 export function TeamTab() {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const [members] = useState<TeamMember[]>(mockMembers);
-  const [organization] = useState<Organization>(mockOrganization);
+  const { currentWorkspace, isPersonal } = useWorkspace();
+  
+  const members = currentWorkspace.members || [];
+  const pendingCount = members.filter(m => m.status === 'pending').length;
 
+  // Personal workspace view
+  if (isPersonal) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Team</h1>
+            <p className="text-muted-foreground">You're on a personal account</p>
+          </div>
+        </div>
+
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="mb-4 rounded-full bg-muted p-4">
+              <User className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold">Personal Account</h3>
+            <p className="mb-6 max-w-md text-muted-foreground">
+              Your personal workspace is for individual projects. Create or join a team 
+              to collaborate with others on shared projects and characters.
+            </p>
+            <Button>
+              <Users className="mr-2 h-4 w-4" />
+              Create a Team
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <CardTitle>Why Create a Team?</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="flex items-start gap-3">
+                <Check className="mt-0.5 h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium">Share Projects</p>
+                  <p className="text-sm text-muted-foreground">
+                    Collaborate on storyboards in real-time
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="mt-0.5 h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium">Shared Characters</p>
+                  <p className="text-sm text-muted-foreground">
+                    Build a common character library
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="mt-0.5 h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium">Team Billing</p>
+                  <p className="text-sm text-muted-foreground">
+                    One subscription for the whole team
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Team workspace view
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Team</h1>
-          <p className="text-muted-foreground">Manage your organization and team members</p>
+          <p className="text-muted-foreground">Manage {currentWorkspace.name} members</p>
         </div>
         <Button onClick={() => setInviteDialogOpen(true)}>
           <UserPlus className="mr-2 h-4 w-4" />
@@ -124,15 +131,15 @@ export function TeamTab() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Organization</CardTitle>
+            <CardTitle className="text-sm font-medium">Team</CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{organization.name}</div>
+            <div className="text-2xl font-bold">{currentWorkspace.name}</div>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary" className="text-xs">
                 <Sparkles className="mr-1 h-3 w-3" />
-                {organization.plan.charAt(0).toUpperCase() + organization.plan.slice(1)} Plan
+                {currentWorkspace.plan.charAt(0).toUpperCase() + currentWorkspace.plan.slice(1)} Plan
               </Badge>
             </div>
           </CardContent>
@@ -144,9 +151,9 @@ export function TeamTab() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{organization.memberCount}</div>
+            <div className="text-2xl font-bold">{currentWorkspace.memberCount}</div>
             <p className="text-xs text-muted-foreground">
-              {members.filter(m => m.status === 'pending').length} pending invitations
+              {pendingCount} pending invitation{pendingCount !== 1 ? 's' : ''}
             </p>
           </CardContent>
         </Card>
@@ -157,7 +164,7 @@ export function TeamTab() {
             <Settings className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{organization.projectCount}</div>
+            <div className="text-2xl font-bold">{currentWorkspace.projectCount}</div>
             <p className="text-xs text-muted-foreground">Shared across team</p>
           </CardContent>
         </Card>
