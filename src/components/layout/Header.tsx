@@ -34,7 +34,7 @@ export function Header({ children }: HeaderProps) {
           {children}
           {/* Logo */}
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
-            <img src={kakisLogo} alt="Kakis AI" className="h-8 w-8" />
+            <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
             <span className="text-xl font-bold">Kakis AI</span>
           </Link>
         </div>
