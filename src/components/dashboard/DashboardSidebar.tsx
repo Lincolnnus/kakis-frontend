@@ -1,4 +1,4 @@
-import { Home, FolderKanban, Users, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import { Home, FolderKanban, Users, UsersRound, CreditCard, LogOut, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import kakisLogo from '@/assets/kakis-logo.png';
 import {
@@ -30,6 +30,7 @@ const navItems = [
   { title: 'Home', value: 'home', icon: Home },
   { title: 'Projects', value: 'projects', icon: FolderKanban },
   { title: 'Characters', value: 'characters', icon: Users },
+  { title: 'Team', value: 'team', icon: UsersRound },
 ];
 
 interface DashboardSidebarProps {
