@@ -1,5 +1,5 @@
-import { Film } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import kakisLogo from '@/assets/kakis-logo.png';
 
 export function Footer() {
   return (
@@ -9,9 +9,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <Film className="h-5 w-5 text-primary-foreground" />
-              </div>
+              <img src={kakisLogo} alt="Kakis AI" className="h-8 w-8" />
               <span className="text-xl font-bold">Kakis AI</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
