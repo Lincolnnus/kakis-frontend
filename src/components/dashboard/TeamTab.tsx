@@ -24,7 +24,6 @@ import {
   Clock
 } from 'lucide-react';
 import { InviteMemberDialog } from './InviteMemberDialog';
-import { OrganizationSwitcher } from './OrganizationSwitcher';
 
 interface TeamMember {
   id: string;
@@ -115,13 +114,10 @@ export function TeamTab() {
           <h1 className="text-3xl font-bold">Team</h1>
           <p className="text-muted-foreground">Manage your organization and team members</p>
         </div>
-        <div className="flex items-center gap-3">
-          <OrganizationSwitcher />
-          <Button onClick={() => setInviteDialogOpen(true)}>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Invite Member
-          </Button>
-        </div>
+        <Button onClick={() => setInviteDialogOpen(true)}>
+          <UserPlus className="mr-2 h-4 w-4" />
+          Invite Member
+        </Button>
       </div>
 
       {/* Organization Overview */}
