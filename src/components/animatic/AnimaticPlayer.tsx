@@ -110,7 +110,7 @@ export function AnimaticPlayer({ frames, onUpdateFrame }: AnimaticPlayerProps) {
   const [isGeneratingMusic, setIsGeneratingMusic] = useState(false);
   const [isGeneratingSFX, setIsGeneratingSFX] = useState(false);
   const [frameAudioData, setFrameAudioData] = useState<Record<string, FrameAudio>>({});
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { toast } = useToast();
 
   // Audio tracks state with sample generated data
