@@ -24,6 +24,7 @@ export default function Landing() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <Partners />
         <section id="features">
           <Features />
         </section>
