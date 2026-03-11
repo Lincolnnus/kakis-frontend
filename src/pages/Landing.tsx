@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Hero } from '@/components/landing/Hero';
@@ -7,9 +8,18 @@ import { Pricing } from '@/components/landing/Pricing';
 import { CTA } from '@/components/landing/CTA';
 
 export default function Landing() {
+  // Force dark theme on landing page
+  useEffect(() => {
+    const root = document.documentElement;
+    const hadDark = root.classList.contains('dark');
+    root.classList.add('dark');
+    return () => {
+      if (!hadDark) root.classList.remove('dark');
+    };
+  }, []);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1">
         <Hero />
