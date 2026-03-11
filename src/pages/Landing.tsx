@@ -6,6 +6,7 @@ import { Features } from '@/components/landing/Features';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { Pricing } from '@/components/landing/Pricing';
 import { CTA } from '@/components/landing/CTA';
+import { Partners } from '@/components/landing/Partners';
 
 export default function Landing() {
   // Force dark theme on landing page
@@ -23,6 +24,7 @@ export default function Landing() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <Partners />
         <section id="features">
           <Features />
         </section>
