@@ -1,71 +1,72 @@
 import { 
   FileText, 
-  Image, 
+  Wand2,
+  Layers,
   ListChecks, 
   Film, 
-  Download, 
-  Share2,
-  Wand2,
-  Layers
+  Download,
+  Zap,
+  Users
 } from 'lucide-react';
 
 const features = [
   {
     icon: FileText,
-    title: 'Script Upload & Parsing',
-    description: 'Upload your script and let AI automatically break it down into scenes, characters, and locations.',
+    title: 'Intelligent Script Parsing',
+    description: 'Upload any script format — our AI breaks it into scenes, characters, locations, and dialogue automatically.',
   },
   {
     icon: Wand2,
-    title: 'AI Storyboard Generation',
-    description: 'Generate stunning visual frames from scene descriptions. Choose from multiple artistic styles.',
+    title: 'AI Frame Generation',
+    description: 'Turn scene descriptions into stunning visual frames. Choose art styles that match your creative vision.',
   },
   {
     icon: Layers,
-    title: 'Storyboard Canvas',
-    description: 'Arrange and edit your frames on a visual canvas. Add notes, camera directions, and dialogue.',
+    title: 'Visual Storyboard Canvas',
+    description: 'Arrange frames on an interactive canvas. Add camera directions, notes, and dialogue overlays.',
   },
   {
     icon: ListChecks,
-    title: 'Shot List Builder',
-    description: 'Auto-generate professional shot lists with camera angles, lens choices, and movements.',
+    title: 'Smart Shot Lists',
+    description: 'Auto-generate professional shot lists with camera angles, lens specs, and movement choreography.',
   },
   {
     icon: Film,
-    title: 'Image-to-Video Animatics',
-    description: 'Transform storyboards into animated sequences with timing control and transitions.',
+    title: 'Cinematic Animatics',
+    description: 'Transform storyboards into timed animatic sequences with transitions, pacing, and audio sync.',
   },
   {
-    icon: Download,
-    title: 'Export Everything',
-    description: 'Download PDFs, images, videos, and spreadsheets. Share with your team instantly.',
+    icon: Zap,
+    title: 'Minutes, Not Weeks',
+    description: 'Complete pre-production workflows that traditionally take weeks — finished in minutes with AI.',
   },
 ];
 
 export function Features() {
   return (
-    <section className="border-t bg-background py-24">
+    <section className="border-t border-border/50 bg-background py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-            Everything You Need to Visualize Your Story
+          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">The Complete Pipeline</p>
+          <h2 className="mb-4 text-3xl font-bold md:text-4xl text-foreground">
+            Every Step from Story to Screen
           </h2>
           <p className="text-lg text-muted-foreground">
-            From script to screen-ready storyboard in one seamless workflow.
+            One AI-powered platform replaces your entire pre-production toolkit.
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group relative rounded-xl border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg"
+              className="group relative rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 transition-all hover:border-primary/40 hover:bg-primary/5"
             >
               <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                 <feature.icon className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-              <p className="text-muted-foreground">{feature.description}</p>
+              <h3 className="mb-2 text-lg font-semibold text-foreground">{feature.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
             </div>
           ))}
         </div>
