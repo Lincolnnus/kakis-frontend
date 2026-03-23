@@ -28,7 +28,7 @@ export function Header({ children }: HeaderProps) {
   const isLanding = location.pathname === '/';
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-[#dfe5f4] bg-[#f9fbff]/95 backdrop-blur supports-[backdrop-filter]:bg-[#f9fbff]/70">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
           {children}
@@ -105,7 +105,7 @@ export function Header({ children }: HeaderProps) {
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button size="sm" className="gradient-primary">
+                <Button size="sm" className="bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]">
                   Get Started
                 </Button>
               </Link>
@@ -180,7 +180,7 @@ export function Header({ children }: HeaderProps) {
                   </Button>
                 </Link>
                 <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full gradient-primary">
+                  <Button className="w-full bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]">
                     Get Started
                   </Button>
                 </Link>

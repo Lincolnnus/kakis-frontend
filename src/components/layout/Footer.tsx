@@ -3,53 +3,53 @@ import kakisLogo from '@/assets/kakis-logo.png';
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background py-12">
+    <footer className="border-t border-[#dfe5f4] bg-[#f4f7ff] py-12">
       <div className="container mx-auto px-4">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2">
               <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
-              <span className="text-xl font-bold">Kakis AI</span>
+              <span className="text-xl font-bold text-[#182241]">Kakis AI</span>
             </Link>
-            <p className="mt-4 text-sm text-muted-foreground">
+            <p className="mt-4 text-sm text-[#6f7895]">
               AI-powered storyboarding for filmmakers, animators, and creative professionals.
             </p>
           </div>
 
           {/* Product */}
           <div>
-            <h4 className="mb-4 font-semibold">Product</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#features" className="hover:text-foreground">Features</a></li>
-              <li><a href="#pricing" className="hover:text-foreground">Pricing</a></li>
-              <li><Link to="/about" className="hover:text-foreground">About Us</Link></li>
+            <h4 className="mb-4 font-semibold text-[#182241]">Product</h4>
+            <ul className="space-y-2 text-sm text-[#6f7895]">
+              <li><a href="#features" className="hover:text-[#182241]">Features</a></li>
+              <li><a href="#pricing" className="hover:text-[#182241]">Pricing</a></li>
+              <li><Link to="/about" className="hover:text-[#182241]">About Us</Link></li>
             </ul>
           </div>
 
           {/* Resources */}
           <div>
-            <h4 className="mb-4 font-semibold">Resources</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Documentation</a></li>
-              <li><a href="#" className="hover:text-foreground">Tutorials</a></li>
-              <li><a href="#" className="hover:text-foreground">Blog</a></li>
-              <li><a href="#" className="hover:text-foreground">Support</a></li>
+            <h4 className="mb-4 font-semibold text-[#182241]">Resources</h4>
+            <ul className="space-y-2 text-sm text-[#6f7895]">
+              <li><a href="#" className="hover:text-[#182241]">Documentation</a></li>
+              <li><a href="#" className="hover:text-[#182241]">Tutorials</a></li>
+              <li><a href="#" className="hover:text-[#182241]">Blog</a></li>
+              <li><a href="#" className="hover:text-[#182241]">Support</a></li>
             </ul>
           </div>
 
           {/* Legal */}
           <div>
-            <h4 className="mb-4 font-semibold">Legal</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-foreground">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-foreground">Cookie Policy</a></li>
+            <h4 className="mb-4 font-semibold text-[#182241]">Legal</h4>
+            <ul className="space-y-2 text-sm text-[#6f7895]">
+              <li><a href="#" className="hover:text-[#182241]">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-[#182241]">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-[#182241]">Cookie Policy</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
+        <div className="mt-12 border-t border-[#dfe5f4] pt-8 text-center text-sm text-[#6f7895]">
           <p>© {new Date().getFullYear()} Kakis AI. All rights reserved.</p>
         </div>
       </div>

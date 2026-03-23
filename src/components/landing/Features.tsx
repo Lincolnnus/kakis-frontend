@@ -44,14 +44,14 @@ const features = [
 
 export function Features() {
   return (
-    <section className="border-t border-border/50 bg-background py-24">
+    <section className="border-t border-[#dfe5f4] bg-[#f4f7ff] py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary">The Complete Pipeline</p>
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl text-foreground">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#5a6eff]">The Complete Pipeline</p>
+          <h2 className="mb-4 text-3xl font-bold text-[#182241] md:text-4xl">
             Every Step from Story to Screen
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-[#6f7895]">
             One AI-powered platform replaces your entire pre-production toolkit.
           </p>
         </div>
@@ -60,13 +60,13 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group relative rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6 transition-all hover:border-primary/40 hover:bg-primary/5"
+              className="group relative rounded-xl border border-[#dfe5f4] bg-white/85 p-6 transition-all hover:border-[#9aa7ff] hover:bg-white"
             >
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-[#e8edff] text-[#5368ff] transition-colors group-hover:bg-[#dfe6ff] group-hover:text-[#4559f0]">
                 <feature.icon className="h-6 w-6" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-foreground">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+              <h3 className="mb-2 text-lg font-semibold text-[#182241]">{feature.title}</h3>
+              <p className="text-sm leading-relaxed text-[#6f7895]">{feature.description}</p>
             </div>
           ))}
         </div>

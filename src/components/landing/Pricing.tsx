@@ -16,17 +16,17 @@ export function Pricing() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <section className="border-t bg-muted/30 py-24">
+    <section className="border-t border-[#dfe5f4] bg-[#f4f7ff] py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <Badge variant="secondary" className="mb-4">
+          <Badge variant="secondary" className="mb-4 border-[#d2dbf2] bg-[#e8edff] text-[#5368ff]">
             <Sparkles className="mr-1 h-3 w-3" />
             Pricing
           </Badge>
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-[#182241] md:text-4xl">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-[#6f7895]">
             Start free and scale as you grow. No hidden fees.
           </p>
         </div>
@@ -40,27 +40,27 @@ export function Pricing() {
             return (
               <div
                 key={plan.id}
-                className={`relative rounded-xl border bg-card p-8 transition-all hover:shadow-lg ${
+                className={`relative rounded-xl border border-[#dfe5f4] bg-white/90 p-8 transition-all hover:shadow-lg ${
                   isPro
-                    ? 'border-primary shadow-lg ring-1 ring-primary'
+                    ? 'border-[#8e9dff] shadow-lg ring-1 ring-[#8e9dff]'
                     : ''
                 }`}
               >
                 {isPro && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
+                    <span className="rounded-full bg-gradient-to-r from-[#6f7cff] to-[#8977ff] px-3 py-1 text-xs font-medium text-white">
                       Most Popular
                     </span>
                   </div>
                 )}
 
                 <div className="mb-6">
-                  <h3 className="text-xl font-semibold">{plan.name}</h3>
+                  <h3 className="text-xl font-semibold text-[#182241]">{plan.name}</h3>
                   <div className="mt-2 flex items-baseline">
-                    <span className="text-4xl font-bold">${plan.price}</span>
-                    <span className="ml-1 text-muted-foreground">/{plan.period}</span>
+                    <span className="text-4xl font-bold text-[#182241]">${plan.price}</span>
+                    <span className="ml-1 text-[#6f7895]">/{plan.period}</span>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className="mt-2 text-sm text-[#6f7895]">
                     {plan.id === 'free' && 'Perfect for trying out the platform'}
                     {plan.id === 'pro' && 'For serious creators and filmmakers'}
                     {plan.id === 'studio' && 'For teams and production studios'}
@@ -70,8 +70,8 @@ export function Pricing() {
                 <ul className="mb-8 space-y-3">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-primary" />
-                      <span className="text-sm">{feature}</span>
+                      <Check className="h-4 w-4 text-[#5368ff]" />
+                      <span className="text-sm text-[#182241]">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -82,7 +82,7 @@ export function Pricing() {
                   </Button>
                 ) : (
                   <Button
-                    className={`w-full ${isPro ? 'gradient-primary' : ''}`}
+                    className={`w-full ${isPro ? 'bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]' : 'border-[#d2dbf2] text-[#4f5d85] hover:border-[#aebcff]'} `}
                     variant={isPro ? 'default' : 'outline'}
                     asChild
                   >
@@ -96,7 +96,7 @@ export function Pricing() {
           })}
         </div>
 
-        <p className="mt-8 text-center text-sm text-muted-foreground">
+        <p className="mt-8 text-center text-sm text-[#6f7895]">
           All paid plans include a 7-day free trial. Cancel anytime.
         </p>
       </div>

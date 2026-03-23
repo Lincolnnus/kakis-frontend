@@ -23,13 +23,13 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="border-t border-border/50 bg-background py-24">
+    <section className="border-t border-[#dfe5f4] bg-[#f4f7ff] py-24">
       <div className="container mx-auto px-4">
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl text-foreground">
+          <h2 className="mb-4 text-3xl font-bold text-[#182241] md:text-4xl">
             Creators Ship Faster with Kakis AI
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-[#6f7895]">
             Hear from filmmakers and studios who transformed their workflow.
           </p>
         </div>
@@ -38,20 +38,20 @@ export function Testimonials() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.author}
-              className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-6"
+              className="rounded-xl border border-[#dfe5f4] bg-white/85 p-6"
             >
-              <blockquote className="mb-6 text-muted-foreground leading-relaxed">
+              <blockquote className="mb-6 leading-relaxed text-[#6f7895]">
                 "{testimonial.quote}"
               </blockquote>
               <div className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                  <AvatarFallback className="bg-[#e8edff] text-[#5368ff] font-semibold">
                     {testimonial.initials}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="font-medium text-foreground">{testimonial.author}</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="font-medium text-[#182241]">{testimonial.author}</div>
+                  <div className="text-sm text-[#6f7895]">
                     {testimonial.role}
                   </div>
                 </div>
