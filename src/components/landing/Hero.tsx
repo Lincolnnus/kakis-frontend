@@ -1,16 +1,17 @@
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Film, FileText, Layers, ListChecks, Sparkles } from 'lucide-react';
 
 // Import storyboard thumbnails for the hover preview
-import lunaThumb from '@/assets/thumbnails/luna-starkeeper-thumb.png';
-import felixThumb from '@/assets/thumbnails/felix-fox-thumb.png';
-import robotThumb from '@/assets/thumbnails/robot-garden-thumb.png';
+import chronoInterventionThumb from '@/assets/thumbnails/chrono-intervention-echoes-of-tomorrow.png';
+import ghostInTheWiresThumb from '@/assets/thumbnails/ghost-in-the-wires.png';
+import signalFromTheSilentWorldThumb from '@/assets/thumbnails/signal-from-the-silent-world.png';
 
 const workflowSteps = [
-  { icon: FileText, title: 'Scripts', description: 'Upload & parse' },
-  { icon: Layers, title: 'Characters & Scenes', description: 'Build and organize story structure' },
-  { icon: ListChecks, title: 'Shots', description: 'Create shot lists' },
-  { icon: Film, title: 'Cinematics', description: 'Animatics & video' },
+  { icon: FileText, title: 'Scripts', description: 'Upload & parse', videoSrc: '/prompt-demo.mp4' },
+  { icon: Layers, title: 'Characters & Scenes', description: 'Build and organize story structure', videoSrc: '' },
+  { icon: ListChecks, title: 'Shots', description: 'Create shot lists', videoSrc: '' },
+  { icon: Film, title: 'Cinematics', description: 'Animatics & video', videoSrc: '' },
 ];
 
 export function Hero() {
@@ -66,13 +67,42 @@ export function Hero() {
 
           {/* Workflow Pipeline */}
           <div className="mx-auto w-full max-w-[1500px] mb-16">
+            <p className="mb-5 text-center text-base font-medium text-[#6f7895] md:mb-6 md:text-lg">
+              Click on each icon below to explore the functions!
+            </p>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 md:gap-8">
               {workflowSteps.map((step) => (
                 <div key={step.title} className="relative group">
                   <div className="flex min-h-[240px] flex-col items-center gap-5 rounded-2xl border border-[#dfe5f4] bg-white/82 backdrop-blur-sm px-10 py-7 md:px-12 md:py-8 transition-all hover:border-[#95a4ff] hover:bg-white">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e8edff] transition-colors group-hover:bg-[#dfe6ff] md:h-20 md:w-20">
-                      <step.icon className="h-8 w-8 text-[#5368ff] md:h-10 md:w-10" />
-                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e8edff] transition-colors group-hover:bg-[#dfe6ff] md:h-20 md:w-20"
+                          aria-label={`Open ${step.title} demo video`}
+                        >
+                          <step.icon className="h-8 w-8 text-[#5368ff] md:h-10 md:w-10" />
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-3xl">
+                        <DialogHeader>
+                          <DialogTitle>{step.title} demo</DialogTitle>
+                        </DialogHeader>
+                        {step.videoSrc ? (
+                          <video
+                            src={step.videoSrc}
+                            controls
+                            autoPlay
+                            playsInline
+                            className="w-full rounded-lg"
+                          />
+                        ) : (
+                          <div className="flex h-48 items-center justify-center rounded-lg border border-[#dfe5f4] bg-[#f4f7ff] px-6 text-center text-[#6f7895]">
+                            Video preview coming soon for {step.title}.
+                          </div>
+                        )}
+                      </DialogContent>
+                    </Dialog>
                     <span className="text-3xl font-semibold text-[#182241]">{step.title}</span>
                     <span className="text-center text-base leading-relaxed text-[#6f7895] md:text-[1.05rem]">{step.description}</span>
                   </div>
@@ -86,9 +116,21 @@ export function Hero() {
         <div className="mx-auto max-w-5xl">
           <div className="grid grid-cols-3 gap-3 md:gap-4">
             {[
-              { src: lunaThumb, alt: 'Luna & the Starkeeper', label: 'Luna & the Starkeeper' },
-              { src: felixThumb, alt: 'Felix the Fox', label: 'Felix the Fox' },
-              { src: robotThumb, alt: "Robot's Garden", label: "Robot's Garden" },
+              {
+                src: chronoInterventionThumb,
+                alt: 'Chrono Intervention: Echoes of Tomorrow',
+                label: 'Chrono Intervention: Echoes of Tomorrow',
+              },
+              {
+                src: ghostInTheWiresThumb,
+                alt: 'Ghost in the Wires',
+                label: 'Ghost in the Wires',
+              },
+              {
+                src: signalFromTheSilentWorldThumb,
+                alt: 'Signal from the Silent World',
+                label: 'Signal from the Silent World',
+              },
             ].map((item) => (
               <div key={item.label} className="relative overflow-hidden rounded-xl border border-[#dfe5f4] group cursor-pointer bg-white/70">
                 <div className="aspect-[4/3] overflow-hidden">
