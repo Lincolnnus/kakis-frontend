@@ -6,12 +6,13 @@ import { Film, FileText, Layers, ListChecks, Sparkles } from 'lucide-react';
 import chronoInterventionThumb from '@/assets/thumbnails/chrono-intervention-echoes-of-tomorrow.png';
 import ghostInTheWiresThumb from '@/assets/thumbnails/ghost-in-the-wires.png';
 import signalFromTheSilentWorldThumb from '@/assets/thumbnails/signal-from-the-silent-world.png';
+import shotsPreviewImage from '@/assets/thumbnails/shots-preview.png';
 
 const workflowSteps = [
   { icon: FileText, title: 'Scripts', description: 'Upload & parse', videoSrc: '/prompt-demo.mp4' },
-  { icon: Layers, title: 'Characters & Scenes', description: 'Build and organize story structure', videoSrc: '' },
-  { icon: ListChecks, title: 'Shots', description: 'Create shot lists', videoSrc: '' },
-  { icon: Film, title: 'Cinematics', description: 'Animatics & video', videoSrc: '' },
+  { icon: Layers, title: 'Characters & Scenes', description: 'Build and organize story structure', videoSrc: '/char-and-scenes.mp4' },
+  { icon: ListChecks, title: 'Shots', description: 'Create shot lists', imageSrc: shotsPreviewImage },
+  { icon: Film, title: 'Cinematics', description: 'Animatics & video', videoSrc: '/cinematics.mp4' },
 ];
 
 export function Hero() {
@@ -70,6 +71,13 @@ export function Hero() {
             <p className="mb-5 text-center text-base font-medium text-[#6f7895] md:mb-6 md:text-lg">
               Click on each icon below to explore the functions!
             </p>
+            <div className="mb-10 flex justify-center md:mb-12">
+              <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#cfd8ff] bg-gradient-to-b from-[#eef2ff] to-[#dde4ff] text-[#5368ff] shadow-[0_12px_24px_rgba(83,104,255,0.2)] animate-bounce">
+                <svg viewBox="0 0 24 24" className="h-11 w-11 fill-[#5368ff]" aria-hidden="true">
+                  <path d="M10 4a2 2 0 1 1 4 0v8h3.2c1.8 0 2.7 2.2 1.3 3.5l-5.2 5a2 2 0 0 1-2.8 0l-5.2-5C3.9 14.2 4.8 12 6.6 12H10V4Z" />
+                </svg>
+              </div>
+            </div>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 md:gap-8">
               {workflowSteps.map((step) => (
                 <div key={step.title} className="relative group">
@@ -95,6 +103,12 @@ export function Hero() {
                             autoPlay
                             playsInline
                             className="w-full rounded-lg"
+                          />
+                        ) : step.imageSrc ? (
+                          <img
+                            src={step.imageSrc}
+                            alt={`${step.title} preview`}
+                            className="w-full rounded-lg object-cover"
                           />
                         ) : (
                           <div className="flex h-48 items-center justify-center rounded-lg border border-[#dfe5f4] bg-[#f4f7ff] px-6 text-center text-[#6f7895]">

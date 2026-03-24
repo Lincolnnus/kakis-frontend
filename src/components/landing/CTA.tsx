@@ -1,11 +1,21 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 
 const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
 
 export function CTA() {
+  const { targetRef, isVisible } = useScrollReveal<HTMLElement>();
+
   return (
-    <section className="relative overflow-hidden border-t border-[#dfe5f4] bg-[#f4f7ff] py-24">
+    <section
+      ref={targetRef}
+      className={cn(
+        'relative overflow-hidden border-t border-[#dfe5f4] bg-[#f4f7ff] py-24 transition-all duration-700 ease-out',
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
+      )}
+    >
       {/* Ambient glow */}
       <div className="pointer-events-none absolute top-1/2 left-1/2 h-[420px] w-[620px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(138,160,255,0.22)] blur-[120px]" />
       

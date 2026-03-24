@@ -1,4 +1,6 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 
 const testimonials = [
   {
@@ -22,8 +24,16 @@ const testimonials = [
 ];
 
 export function Testimonials() {
+  const { targetRef, isVisible } = useScrollReveal<HTMLElement>();
+
   return (
-    <section className="border-t border-[#dfe5f4] bg-[#f4f7ff] py-24">
+    <section
+      ref={targetRef}
+      className={cn(
+        'border-t border-[#dfe5f4] bg-[#f4f7ff] py-24 transition-all duration-700 ease-out',
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0',
+      )}
+    >
       <div className="container mx-auto px-4">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <h2 className="mb-4 text-3xl font-bold text-[#182241] md:text-4xl">
