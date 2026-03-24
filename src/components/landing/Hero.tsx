@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { Film, FileText, Layers, ListChecks, Sparkles } from 'lucide-react';
 
 // Import storyboard thumbnails for the hover preview
 import lunaThumb from '@/assets/thumbnails/luna-starkeeper-thumb.png';
@@ -7,10 +7,10 @@ import felixThumb from '@/assets/thumbnails/felix-fox-thumb.png';
 import robotThumb from '@/assets/thumbnails/robot-garden-thumb.png';
 
 const workflowSteps = [
-  { number: 1, title: 'Scope', description: 'Capture business goals and convert them into concise AI-ready briefs.' },
-  { number: 2, title: 'Generate', description: 'Create structured prompts, scripts, and visual directions with style control.' },
-  { number: 3, title: 'Orchestrate', description: 'Connect APIs and model pipelines into one practical product flow.' },
-  { number: 4, title: 'Ship', description: 'Deliver production-ready AI features tailored for local startup teams.' },
+  { icon: FileText, title: 'Scripts', description: 'Upload & parse' },
+  { icon: Layers, title: 'Characters & Scenes', description: 'Build and organize story structure' },
+  { icon: ListChecks, title: 'Shots', description: 'Create shot lists' },
+  { icon: Film, title: 'Cinematics', description: 'Animatics & video' },
 ];
 
 export function Hero() {
@@ -70,8 +70,8 @@ export function Hero() {
               {workflowSteps.map((step) => (
                 <div key={step.title} className="relative group">
                   <div className="flex min-h-[240px] flex-col items-center gap-5 rounded-2xl border border-[#dfe5f4] bg-white/82 backdrop-blur-sm px-10 py-7 md:px-12 md:py-8 transition-all hover:border-[#95a4ff] hover:bg-white">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#ede8ff] text-3xl font-bold text-[#6f5cf7] transition-colors group-hover:bg-[#e5deff] md:h-20 md:w-20 md:text-4xl">
-                      {step.number}
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e8edff] transition-colors group-hover:bg-[#dfe6ff] md:h-20 md:w-20">
+                      <step.icon className="h-8 w-8 text-[#5368ff] md:h-10 md:w-10" />
                     </div>
                     <span className="text-3xl font-semibold text-[#182241]">{step.title}</span>
                     <span className="text-center text-base leading-relaxed text-[#6f7895] md:text-[1.05rem]">{step.description}</span>

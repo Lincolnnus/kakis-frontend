@@ -1,14 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useSubscription, plans } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
 
+const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+
 const planMeta = {
-  free: { cta: 'Get Started', link: '/signup' },
-  pro: { cta: 'Start Free Trial', link: '/checkout?plan=pro' },
-  studio: { cta: 'Start Free Trial', link: '/checkout?plan=studio' },
+  free: { cta: 'Get Started' },
+  pro: { cta: 'Start Free Trial' },
+  studio: { cta: 'Start Free Trial' },
 };
 
 export function Pricing() {
@@ -86,9 +87,9 @@ export function Pricing() {
                     variant={isPro ? 'default' : 'outline'}
                     asChild
                   >
-                    <Link to={isAuthenticated ? meta.link : '/signup'}>
+                    <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">
                       {meta.cta}
-                    </Link>
+                    </a>
                   </Button>
                 )}
               </div>

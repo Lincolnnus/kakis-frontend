@@ -15,6 +15,8 @@ import { Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
 import { useState, ReactNode } from 'react';
 import kakisLogo from '@/assets/kakis-logo.png';
 
+const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+
 interface HeaderProps {
   children?: ReactNode;
 }
@@ -45,9 +47,6 @@ export function Header({ children }: HeaderProps) {
             <>
               <a href="#features" className="text-sm text-muted-foreground hover:text-foreground">
                 Features
-              </a>
-              <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground">
-                Pricing
               </a>
             </>
           )}
@@ -99,16 +98,16 @@ export function Header({ children }: HeaderProps) {
             </>
           ) : (
             <>
-              <Link to="/login">
-                <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" asChild>
+                <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">
                   Sign In
-                </Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="sm" className="bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]">
+                </a>
+              </Button>
+              <Button size="sm" className="bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]" asChild>
+                <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">
                   Get Started
-                </Button>
-              </Link>
+                </a>
+              </Button>
             </>
           )}
         </nav>
@@ -139,13 +138,6 @@ export function Header({ children }: HeaderProps) {
                 >
                   Features
                 </a>
-                <a 
-                  href="#pricing" 
-                  className="text-muted-foreground hover:text-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Pricing
-                </a>
               </>
             )}
             
@@ -174,16 +166,16 @@ export function Header({ children }: HeaderProps) {
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" asChild>
+                  <a href={APP_STAGING_URL} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>
                     Sign In
-                  </Button>
-                </Link>
-                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]">
+                  </a>
+                </Button>
+                <Button className="w-full bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]" asChild>
+                  <a href={APP_STAGING_URL} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>
                     Get Started
-                  </Button>
-                </Link>
+                  </a>
+                </Button>
               </>
             )}
           </nav>

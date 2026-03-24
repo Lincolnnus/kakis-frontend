@@ -22,7 +22,6 @@ export function Footer() {
             <h4 className="mb-4 font-semibold text-[#182241]">Product</h4>
             <ul className="space-y-2 text-sm text-[#6f7895]">
               <li><a href="#features" className="hover:text-[#182241]">Features</a></li>
-              <li><a href="#pricing" className="hover:text-[#182241]">Pricing</a></li>
               <li><Link to="/about" className="hover:text-[#182241]">About Us</Link></li>
             </ul>
           </div>

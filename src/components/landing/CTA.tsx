@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+
+const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
 
 export function CTA() {
   return (
@@ -19,13 +20,13 @@ export function CTA() {
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" className="h-12 bg-gradient-to-r from-[#6f7cff] to-[#8977ff] px-8 text-base text-white hover:from-[#6574ff] hover:to-[#7e6dff]" asChild>
-              <Link to="/signup">
+              <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">
                 Start Creating Free
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              </a>
             </Button>
             <Button size="lg" variant="outline" className="border-[#d2dbf2] bg-white/90 text-[#4f5d85] hover:border-[#aebcff] hover:bg-white" asChild>
-              <Link to="/login">Sign In</Link>
+              <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">Sign In</a>
             </Button>
           </div>
         </div>

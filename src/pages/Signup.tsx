@@ -7,6 +7,8 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import kakisLogo from '@/assets/kakis-logo.png';
 
+const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+
 export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const { loginWithGoogle } = useAuth();
@@ -88,9 +90,9 @@ export default function Signup() {
             
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:underline">
+              <a href={APP_STAGING_URL} className="text-primary hover:underline" target="_blank" rel="noreferrer">
                 Sign in
-              </Link>
+              </a>
             </p>
             
             <p className="text-center text-xs text-muted-foreground">
