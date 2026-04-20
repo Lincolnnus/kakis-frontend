@@ -1,0 +1,184 @@
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+
+import { ReactNode } from 'react';
+
+type Section = {
+  title: string;
+  paragraphs?: ReactNode[];
+  bullets?: ReactNode[];
+  paragraphsAfterBullets?: ReactNode[];
+  bulletsAfter?: ReactNode[];
+};
+
+const sections: Section[] = [
+  {
+    title: '1. ACCEPTANCE OF THESE TERMS OF SERVICE',
+    paragraphs: [
+      '1.1 These Terms of Service, including our Privacy Policy and Community Guidelines which are incorporated herein by reference (together, this "Agreement"), constitute a legally binding contract between you and Fooyo and its affiliates (collectively, "Fooyo", "Company", "us," "we" or "our"). This Agreement governs your use of Kakis.ai, along with its associated websites and apps (collectively, the "Services" or "Kakis.ai").',
+      '1.2 The Services provide features and functionalities that allow users to turn text prompts into full-fledged short stories and generated video content through the use of generative artificial intelligence (AI) technology.',
+      '1.3 IF YOU USE Kakis.ai OR THE SERVICES PROVIDED BY US, YOU ARE DEEMED TO HAVE READ, UNDERSTOOD, AND AGREED TO BE BOUND BY THIS AGREEMENT.',
+      '1.4 Modifications:In order to provide better services or for legal, regulatory, or security reasons, we reserve the right to amend or update this Agreement from time to time. Your continued use of Kakis.ai after modifications implies your acceptance.',
+      '1.5 ARBITRATION NOTICE: You agree that disputes arising under this Agreement will be resolved by binding, individual arbitration. BY ACCEPTING THIS AGREEMENT, YOU WAIVE THE RIGHT TO A TRIAL BY JURY OR TO PARTICIPATE IN ANY CLASS ACTION.',
+    ],
+  },
+  {
+    title: '2. REGISTRATION AND USE',
+    paragraphs: [
+      '2.1 Your Eligibility: Anyone under the age of 13 or other minimum age as defined under applicable laws of your jurisdiction ("Minimum Age") shall not use the Services. If you are between the Minimum Age and the age of majority in your jurisdiction, you may only use Kakis.ai with the consent and supervision of a parent or legal guardian.',
+      '2.2 License: Subject to your compliance with this Agreement, we grant you a non-exclusive, non-sublicensable, non-transferable, personal, revocable license to use Kakis.ai.',
+      '2.3 Account Registration: To access Kakis.ai, you must create an Account. You agree to provide true, accurate, and complete information and to keep your login credentials secure. You are responsible for all activities that occur under your Account.',
+    ],
+  },
+  {
+    title: '3. INSTRUCTIONS OF CONDUCT',
+    paragraphs: [
+      '3.1 Your access to and use of the Services is subject to this Agreement. You may not:',
+    ],
+    bullets: [
+      'Reverse engineer, decompile, or attempt to extract the source code or underlying AI models of the Services.',
+      'Use the Services for political campaigning, spam, or unsolicited advertising.',
+      'Upload prompts or generate content that is defamatory, obscene, pornographic, hateful, or discriminatory.',
+      'Generate material that contains threats of physical violence or promotes dangerous activities.',
+      'Use the Services to develop competing artificial intelligence or machine learning models.',
+    ],
+    paragraphsAfterBullets: [
+      '3.2 Artificial Intelligence Disclaimer: Generative AI is a rapidly evolving technology. Given the probabilistic nature of machine learning, use of our Services may result in Output that does not accurately reflect real people, places, or facts.',
+    ],
+    bulletsAfter: [
+      'You should not rely on generated stories or videos as a source of truth.',
+      'You are responsible for evaluating the accuracy and appropriateness of the Output before sharing it.',
+    ],
+  },
+  {
+    title: '4. INTELLECTUAL PROPERTY RIGHTS AND CONTENT',
+    paragraphs: [
+      '4.1 You may input text prompts, story outlines, and data ("Input") into Kakis.ai to receive generated short story videos ("Output"). Input and Output are collectively referred to as "Content."',
+      '4.2 You warrant that you hold the necessary rights to the Input you provide and that your Input does not violate any third-party intellectual property rights.',
+      '4.3 Ownership: You own all intellectual property rights in and to the Content under applicable law. We do not claim ownership of the Content you generate.',
+      '4.4 License to Fooyo: By using the Services, you grant Fooyo a non-exclusive, worldwide, royalty-free license to host, store, transfer, publicly display, and modify your Input and Output for the purposes of operating Kakis.ai, improving our algorithms, and ensuring content safety compliance.',
+      '4.5 Labeling & Watermarks: Kakis.ai may automatically apply watermarks or labels indicating that the video was generated by AI. You agree not to remove, obscure, or alter these notices.',
+    ],
+  },
+  {
+    title: '5. THIRD-PARTY PROVIDERS AND AI MODELS',
+    paragraphs: [
+      '5.1 Alibaba Model Integration: You acknowledge and agree that Kakis.ai utilizes third-party artificial intelligence models provided by Alibaba to power its core story-to-video generation features.',
+      '5.2 To provide the Services, your Input (text prompts and story concepts) will be transmitted to and processed by Alibaba\'s APIs. By using Kakis.ai, you consent to this data processing by our third-party AI provider in accordance with our Privacy Policy.',
+      '5.3 We do not guarantee the continuous availability of these third-party models and shall not be held liable for any interruptions or content anomalies originating directly from the underlying third-party AI infrastructure.',
+    ],
+  },
+  {
+    title: '6. COPYRIGHT COMPLAINT',
+    paragraphs: [
+      <>If you believe that your intellectual property rights have been infringed by Content on Kakis.ai, please send a written notice via <a href="https://www.fooyo.sg/contact/" target="_blank" rel="noopener noreferrer" className="text-[#5368ff] hover:underline">https://www.fooyo.sg/contact/</a> including a description of the copyrighted work, the location of the allegedly infringing material, and a statement under penalty of perjury that you are the authorized rights holder.</>,
+    ],
+  },
+  {
+    title: '7. COMMERCIAL TERMS',
+    paragraphs: [
+      '7.1 Kakis.ai may offer both free and paid tiers (e.g., for longer video generation or higher resolution). We reserve the right to adjust pricing and billing methods with prior notice.',
+      '7.2 The provision of free services does not constitute a waiver of our right to charge for such services in the future.',
+    ],
+  },
+  {
+    title: '8. EXCLUSION OF WARRANTIES & LIMITATIONS ON LIABILITY',
+    paragraphs: [
+      '8.1 AS-IS Basis: THE SERVICES ARE PROVIDED "AS IS" AND WE MAKE NO WARRANTY THAT THE SERVICES WILL BE UNINTERRUPTED, ERROR-FREE, OR THAT THE GENERATED VIDEOS WILL MEET YOUR SPECIFIC EXPECTATIONS.',
+      '8.2 Indemnification: You agree to defend and indemnify Fooyo, its affiliates, and employees from any claims, damages, or expenses arising from your breach of this Agreement or your use of the generated Content.',
+      '8.3 Limitation of Liability: TO THE FULLEST EXTENT PERMITTED BY LAW, FOOYO SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF YOUR USE OR INABILITY TO USE THE SERVICES.',
+    ],
+  },
+  {
+    title: '9. GOVERNING LAWS AND DISPUTE RESOLUTION',
+    paragraphs: [
+      '9.1 Governing Law: This Agreement will be governed by and construed in accordance with the laws of Singapore.',
+      '9.2 Arbitration: Any dispute arising out of this Agreement shall be referred to and finally resolved by arbitration administered by the Singapore International Arbitration Centre (SIAC) in accordance with SIAC rules. The seat of the arbitration will be Singapore.',
+    ],
+  },
+  {
+    title: '10. TERM AND TERMINATION',
+    paragraphs: [
+      '10.1 You may terminate this Agreement by deleting your Account and ceasing use of the Services.',
+      '10.2 Fooyo reserves the right to suspend or terminate your Account immediately, without notice, if you violate any terms of this Agreement, including the generation of prohibited content.',
+    ],
+  },
+  {
+    title: '11. CONTACT INFORMATION',
+    paragraphs: [
+      <>If you have any questions, complaints, or suggestions regarding this Agreement, please contact us via <a href="https://www.fooyo.sg/contact/" target="_blank" rel="noopener noreferrer" className="text-[#5368ff] hover:underline">https://www.fooyo.sg/contact/</a></>,
+    ],
+  },
+];
+
+export default function TermsOfService() {
+  return (
+    <div className="flex min-h-screen flex-col bg-[#f4f7ff]">
+      <Header />
+      <main className="flex-1 py-14 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="mb-6 flex justify-start">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 rounded-lg border border-[#d6ddf3] bg-white px-4 py-2 text-sm font-medium text-[#182241] shadow-sm transition-colors hover:bg-[#eef3ff]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Link>
+          </div>
+        </div>
+
+        <div className="container mx-auto max-w-4xl px-4">
+          <div className="rounded-2xl border border-[#dfe5f4] bg-white/85 p-7 shadow-sm backdrop-blur-sm md:p-10">
+            <h1 className="text-3xl font-bold tracking-tight text-[#182241] md:text-4xl">Kakis.ai Terms of Service</h1>
+            <p className="mt-3 text-sm text-[#6f7895]">Last Updated Date: 2026/03/29</p>
+            <p className="text-sm text-[#6f7895]">Effective Date: 2026/03/29</p>
+
+            <div className="mt-7 space-y-4 text-[15px] leading-relaxed text-[#4f5d85] md:text-base">
+              <p>Thank you for using Kakis.ai.</p>
+            </div>
+
+            <div className="mt-10 space-y-8">
+              {sections.map((section) => (
+                <section key={section.title} className="space-y-3">
+                  <h2 className="text-xl font-semibold text-[#182241] md:text-2xl">{section.title}</h2>
+
+                  {section.paragraphs?.map((paragraph, index) => (
+                    <p key={index} className="text-[15px] leading-relaxed text-[#4f5d85] md:text-base">
+                      {paragraph}
+                    </p>
+                  ))}
+
+                  {section.bullets && (
+                    <ul className="list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-[#4f5d85] md:text-base">
+                      {section.bullets.map((bullet, index) => (
+                        <li key={index}>{bullet}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {section.paragraphsAfterBullets?.map((paragraph, index) => (
+                    <p key={index} className="text-[15px] leading-relaxed text-[#4f5d85] md:text-base">
+                      {paragraph}
+                    </p>
+                  ))}
+
+                  {section.bulletsAfter && (
+                    <ul className="list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-[#4f5d85] md:text-base">
+                      {section.bulletsAfter.map((bullet, index) => (
+                        <li key={index}>{bullet}</li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
+            </div>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}

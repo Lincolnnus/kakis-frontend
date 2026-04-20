@@ -2,9 +2,9 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Hero } from '@/components/landing/Hero';
 import { Features } from '@/components/landing/Features';
-import { Testimonials } from '@/components/landing/Testimonials';
 import { CTA } from '@/components/landing/CTA';
 import { Partners } from '@/components/landing/Partners';
+import { UpcomingEvent } from '@/components/landing/UpcomingEvent';
 
 export default function Landing() {
   return (
@@ -12,11 +12,11 @@ export default function Landing() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <UpcomingEvent />
         <Partners />
         <section id="features">
           <Features />
         </section>
-        <Testimonials />
         <CTA />
       </main>
       <Footer />

@@ -1,18 +1,17 @@
+import { Fragment } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Film, FileText, Layers, ListChecks, Sparkles } from 'lucide-react';
+import { ArrowRight, Film, FileText, Layers, ListChecks, Sparkles } from 'lucide-react';
 
 // Import storyboard thumbnails for the hover preview
 import chronoInterventionThumb from '@/assets/thumbnails/chrono-intervention-echoes-of-tomorrow.png';
 import ghostInTheWiresThumb from '@/assets/thumbnails/ghost-in-the-wires.png';
 import signalFromTheSilentWorldThumb from '@/assets/thumbnails/signal-from-the-silent-world.png';
-import shotsPreviewImage from '@/assets/thumbnails/shots-preview.png';
 
 const workflowSteps = [
-  { icon: FileText, title: 'Scripts', description: 'Upload & parse', videoSrc: '/prompt-demo.mp4' },
-  { icon: Layers, title: 'Characters & Scenes', description: 'Build and organize story structure', videoSrc: '/char-and-scenes.mp4' },
-  { icon: ListChecks, title: 'Shots', description: 'Create shot lists', imageSrc: shotsPreviewImage },
-  { icon: Film, title: 'Cinematics', description: 'Animatics & video', videoSrc: '/cinematics.mp4' },
+  { icon: FileText, title: 'Scripts'},
+  { icon: Layers, title: 'Characters & Scenes'},
+  { icon: ListChecks, title: 'Shots'},
+  { icon: Film, title: 'Cinematics'},
 ];
 
 export function Hero() {
@@ -23,24 +22,24 @@ export function Hero() {
       <div className="pointer-events-none absolute -bottom-16 right-0 h-[420px] w-[420px] rounded-full bg-[rgba(180,157,255,0.24)] blur-[120px]" />
 
       <div className="container mx-auto px-4 py-24 md:py-36 relative z-10">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-6xl text-center">
           {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cfd8ff] bg-[#e8edff] px-4 py-1.5 text-sm">
             <Sparkles className="h-4 w-4 text-[#5b6eff]" />
-            <span className="font-medium text-[#4660ff]">AI-Powered Production Pipeline</span>
+            <span className="font-medium text-[#4660ff]">AI-Powered Storyboarding tool</span>
           </div>
 
           {/* Headline */}
           <h1 className="mb-6 text-4xl font-bold tracking-tight text-[#111c3d] md:text-6xl lg:text-7xl">
-            From Idea to Deployment,
+            Prompt. Animate. Captivate.
             <br />
-            <span className="text-[#5368ff]">Built with AI</span>
+            <span className="text-[#5368ff]">Visualising your idea in just minutes.</span>
           </h1>
 
           {/* Subheadline */}
           <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-[#76819d] md:text-xl">
-            Kakis turns prompts into production-ready workflows for startups in Singapore—faster scripting,
-            clearer visuals, and practical AI solutions teams can ship.
+            Kakis AI is one of the best AI story generators for turning your words into stunning videos, vivid visuals, and stories that move people. 
+            Experience the magic of an automated text to animation tool with our free AI story generator. No camera. No crew. No fuss.
           </p>
 
           {/* CTAs */}
@@ -67,9 +66,30 @@ export function Hero() {
           </div>
 
           {/* Workflow Pipeline */}
-          <div className="mx-auto w-full max-w-[1500px] mb-16">
-            <p className="mb-5 text-center text-base font-medium text-[#6f7895] md:mb-6 md:text-lg">
-              Click on each icon below to explore the functions!
+          <div className="mx-auto mb-16 w-full max-w-[1500px]">
+            <div className="w-full pb-2">
+              <div className="mx-auto grid w-full grid-cols-2 gap-3 md:flex md:items-center md:justify-center md:gap-3">
+                {workflowSteps.map((step, index) => (
+                  <Fragment key={step.title}>
+                    <div className="group relative min-w-0 md:flex-1">
+                      <div className="grid min-h-[132px] grid-rows-[56px_1fr] justify-items-center gap-3 rounded-2xl border border-[#dfe5f4] bg-white/82 px-3 py-5 backdrop-blur-sm transition-all hover:border-[#95a4ff] hover:bg-white md:min-h-[170px] md:grid-rows-[64px_1fr] md:gap-4 md:px-5 md:py-7">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#e8edff] transition-colors group-hover:bg-[#dfe6ff] md:h-16 md:w-16">
+                          <step.icon className="h-7 w-7 text-[#5368ff] md:h-8 md:w-8" />
+                        </div>
+                        <span className="mt-1 flex min-h-[2.8rem] items-start justify-center text-center text-base font-semibold leading-tight text-[#182241] sm:text-lg md:min-h-[4rem] md:text-2xl">{step.title}</span>
+                      </div>
+                    </div>
+                    {index < workflowSteps.length - 1 && (
+                      <div className="hidden shrink-0 items-center justify-center text-[#5368ff] md:flex" aria-hidden="true">
+                        <ArrowRight className="h-5 w-5 md:h-6 md:w-6" />
+                      </div>
+                    )}
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+            <p className="mt-6 mb-5 text-center text-base font-medium text-[#6f7895] md:mb-6 md:text-lg">
+              Check out our video tutorial below!
             </p>
             <div className="mb-10 flex justify-center md:mb-12">
               <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#cfd8ff] bg-gradient-to-b from-[#eef2ff] to-[#dde4ff] text-[#5368ff] shadow-[0_12px_24px_rgba(83,104,255,0.2)] animate-bounce">
@@ -78,50 +98,16 @@ export function Hero() {
                 </svg>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 md:gap-8">
-              {workflowSteps.map((step) => (
-                <div key={step.title} className="relative group">
-                  <div className="flex min-h-[240px] flex-col items-center gap-5 rounded-2xl border border-[#dfe5f4] bg-white/82 backdrop-blur-sm px-10 py-7 md:px-12 md:py-8 transition-all hover:border-[#95a4ff] hover:bg-white">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <button
-                          type="button"
-                          className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e8edff] transition-colors group-hover:bg-[#dfe6ff] md:h-20 md:w-20"
-                          aria-label={`Open ${step.title} demo video`}
-                        >
-                          <step.icon className="h-8 w-8 text-[#5368ff] md:h-10 md:w-10" />
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-3xl">
-                        <DialogHeader>
-                          <DialogTitle>{step.title} demo</DialogTitle>
-                        </DialogHeader>
-                        {step.videoSrc ? (
-                          <video
-                            src={step.videoSrc}
-                            controls
-                            autoPlay
-                            playsInline
-                            className="w-full rounded-lg"
-                          />
-                        ) : step.imageSrc ? (
-                          <img
-                            src={step.imageSrc}
-                            alt={`${step.title} preview`}
-                            className="w-full rounded-lg object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-48 items-center justify-center rounded-lg border border-[#dfe5f4] bg-[#f4f7ff] px-6 text-center text-[#6f7895]">
-                            Video preview coming soon for {step.title}.
-                          </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
-                    <span className="text-3xl font-semibold text-[#182241]">{step.title}</span>
-                    <span className="text-center text-base leading-relaxed text-[#6f7895] md:text-[1.05rem]">{step.description}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="mb-12 flex justify-center">
+              <a
+                href="/Kakis-ai-training-video.mp4"
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-20 w-20 items-center justify-center rounded-2xl border border-[#dfe5f4] bg-[#e8edff] text-[#5368ff] shadow-[0_10px_24px_rgba(83,104,255,0.16)] transition-colors hover:bg-[#dfe6ff] md:h-24 md:w-24"
+                aria-label="Open Kakis tutorial video"
+              >
+                <Film className="h-9 w-9 md:h-10 md:w-10" />
+              </a>
             </div>
           </div>
         </div>
@@ -166,10 +152,6 @@ export function Hero() {
             ))}
           </div>
 
-          {/* Social Proof */}
-          <p className="mt-8 text-center text-sm text-[#6f7895]">
-            Trusted by 10,000+ filmmakers, animators, and creative studios worldwide
-          </p>
         </div>
       </div>
     </section>

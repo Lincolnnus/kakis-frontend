@@ -12,7 +12,6 @@ export function Partners() {
   const clients = [
     { name: 'National Heritage Board', href: 'https://www.nhb.gov.sg/' },
     { name: 'Alibaba Group', href: 'https://talent.alibaba.com/en/home?lang=en' },
-    { name: 'DBS Bank' }
   ];
 
   return (

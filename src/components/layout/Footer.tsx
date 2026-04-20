@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import kakisLogo from '@/assets/kakis-logo.png';
 
 export function Footer() {
   return (
@@ -8,8 +7,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-2">
-              <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
+            <Link to="/" className="flex items-center">
               <span className="text-xl font-bold text-[#182241]">Kakis AI</span>
             </Link>
             <p className="mt-4 text-sm text-[#6f7895]">
@@ -30,10 +28,17 @@ export function Footer() {
           <div>
             <h4 className="mb-4 font-semibold text-[#182241]">Resources</h4>
             <ul className="space-y-2 text-sm text-[#6f7895]">
-              <li><a href="#" className="hover:text-[#182241]">Documentation</a></li>
-              <li><a href="#" className="hover:text-[#182241]">Tutorials</a></li>
-              <li><a href="#" className="hover:text-[#182241]">Blog</a></li>
-              <li><a href="#" className="hover:text-[#182241]">Support</a></li>
+              <li>
+                <a
+                  href="/Kakis%20AI%20User%20Documentation%20for%20hackathon.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-[#182241]"
+                >
+                  Documentation
+                </a>
+              </li>
+              <li><Link to="/faqs" className="hover:text-[#182241]">FAQs</Link></li>
             </ul>
           </div>
 
@@ -41,9 +46,9 @@ export function Footer() {
           <div>
             <h4 className="mb-4 font-semibold text-[#182241]">Legal</h4>
             <ul className="space-y-2 text-sm text-[#6f7895]">
-              <li><a href="#" className="hover:text-[#182241]">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-[#182241]">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-[#182241]">Cookie Policy</a></li>
+              <li><Link to="/privacy-policy" className="hover:text-[#182241]">Privacy Policy</Link></li>
+              <li><Link to="/terms-of-service" className="hover:text-[#182241]">Terms of Service</Link></li>
+              <li><Link to="/cookie-policy" className="hover:text-[#182241]">Cookie Policy</Link></li>
             </ul>
           </div>
         </div>

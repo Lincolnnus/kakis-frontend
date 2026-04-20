@@ -1,6 +1,5 @@
 import { Home, FolderKanban, Users, UsersRound, CreditCard, LogOut, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import kakisLogo from '@/assets/kakis-logo.png';
 import {
   Sidebar,
   SidebarContent,
@@ -52,8 +51,7 @@ export function DashboardSidebar({ activeTab, onTabChange }: DashboardSidebarPro
       {/* Logo Header */}
       <SidebarHeader className="px-3 py-4">
         <Link to="/" className="flex items-center gap-2">
-          <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10 shrink-0" />
-          {!isCollapsed && <span className="text-xl font-bold">Kakis AI</span>}
+          <span className="text-xl font-bold">{isCollapsed ? 'KA' : 'Kakis AI'}</span>
         </Link>
       </SidebarHeader>
 

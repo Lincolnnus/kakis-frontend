@@ -13,7 +13,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
 import { useState, ReactNode } from 'react';
-import kakisLogo from '@/assets/kakis-logo.png';
 
 const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
 
@@ -34,9 +33,8 @@ export function Header({ children }: HeaderProps) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
           {children}
-          {/* Logo */}
+          {/* Brand */}
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
-            <img src={kakisLogo} alt="Kakis AI" className="h-10 w-10" />
             <span className="text-xl font-bold">Kakis AI</span>
           </Link>
         </div>
