@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 
-const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+const APP_STAGING_URL = 'https://app.kakis.ai/';
 
 export function CTA() {
   const { targetRef, isVisible } = useScrollReveal<HTMLElement>();

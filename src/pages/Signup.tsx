@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+const APP_STAGING_URL = 'https://app.kakis.ai/';
 
 export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);

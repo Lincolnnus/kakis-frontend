@@ -4,7 +4,7 @@ import { Check, Sparkles } from 'lucide-react';
 import { useSubscription, plans } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
 
-const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+const APP_STAGING_URL = 'https://app.kakis.ai/';
 
 const planMeta = {
   free: { cta: 'Get Started' },

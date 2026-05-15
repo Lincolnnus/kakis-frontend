@@ -3,10 +3,12 @@ import { CalendarDays, FileText, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
 
-const EVENT_START_DATE = new Date(Date.UTC(2026, 4, 5, 16, 0, 0));
-const EVENT_NOTICE_VIDEO_URL = new URL('../../../join campaign demo.mp4', import.meta.url).href;
-const EVENT_ROLE_CREATION_VIDEO_URL = new URL('../../../Role Creation.mp4', import.meta.url).href;
-const ORGANIZER_REGISTRATION_URL = 'https://survey.alibabacloud.com/uone/sg/survey/iMZXs_7nB';
+// Countdown target: submission deadline — 29 May 2026 12:00pm SGT (UTC+8).
+// Convert to UTC by subtracting 8 hours: 29 May 2026 12:00 GMT+8 => 29 May 2026 04:00 UTC
+const EVENT_START_DATE = new Date(Date.UTC(2026, 4, 29, 4, 0, 0));
+const SIGNUP_GUIDE_PDF_URL = new URL('../../../Signup Guide.pdf', import.meta.url).href;
+const ALIBABA_BRIEF_PDF_URL = new URL('../../../Alibaba Cloud Singapore Stories Unearthed WAN AI Video Challenge overview and brief.pdf', import.meta.url).href;
+
 const ORGANIZER_WEBSITE_URL = 'https://www.alibabacloud.com/en/campaign/wan_video_challenge';
 const WHATSAPP_COMMUNITY_URL = 'https://chat.whatsapp.com/EDvmuIu7M6sBggLkUGFVkM';
 
@@ -35,32 +37,32 @@ type PrizeTier = {
 const HACKATHON_TIMELINE: TimelineMilestone[] = [
   {
     title: 'Registration period',
-    description: 'Register your interest via this page',
-    date: '13 April - 5 May 2026',
+    description: 'Register your interest here',
+    date: '13 April - 14 May 2026',
     detailsPosition: 'top',
   },
   {
-    title: 'Theme reveal and Kickoff',
-    description: 'Join the online briefing as we unveil the challenge theme',
-    date: '6 May 2026',
+    title: 'Online Briefing and Workshop',
+    description: 'Online briefing to reveal the challenge theme',
+    date: '15 May 2026, 10am - 12pm SGT',
     detailsPosition: 'bottom',
-  },
-  {
-    title: 'AI Creator Workshops',
-    description: 'Join our online workshops to learn how to use AI tools',
-    date: '7 - 8 May 2026',
-    detailsPosition: 'top',
   },
   {
     title: 'Submission Deadline',
-    description: 'Submit your completed videos',
-    date: '20 May 2026',
+    description: 'Submit your completed video',
+    date: '29 May 2026',
+    detailsPosition: 'top',
+  },
+  {
+    title: 'Judging period',
+    description: 'All entries judged by our panel',
+    date: '2 - 8 June 2026',
     detailsPosition: 'bottom',
   },
   {
-    title: 'Awards Ceremony',
-    description: 'Selected finalists will be invited to the awards ceremony in Singapore',
-    date: '2 June 2026',
+    title: 'Award Ceremony',
+    description: 'Finalists invited to Singapore',
+    date: '16 June 2026',
     detailsPosition: 'top',
   },
 ];
@@ -115,11 +117,9 @@ function TimelineDateBadge({ date, placement }: { date: string; placement: 'abov
 }
 
 export function UpcomingEvent() {
-  const { targetRef, isVisible } = useScrollReveal<HTMLElement>();
+  const { targetRef, isVisible } = useScrollReveal<HTMLElement>({ threshold: 0.05 });
   const [countdown, setCountdown] = useState<Countdown>(() => getCountdown());
-  const [isVideoVisible, setIsVideoVisible] = useState(false);
-  const [isRolesVideoVisible, setIsRolesVideoVisible] = useState(false);
-  const hasRegistrationLink = ORGANIZER_REGISTRATION_URL.trim() !== '';
+
   const hasOrganizerWebsiteLink = ORGANIZER_WEBSITE_URL.trim() !== '';
   const hasWhatsappCommunityLink = WHATSAPP_COMMUNITY_URL.trim() !== '';
 
@@ -155,7 +155,7 @@ export function UpcomingEvent() {
 
           <div className="relative mb-4 inline-flex items-center gap-2 rounded-full border border-[#cdd8ff] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#4e63d9]">
             <Sparkles className="h-4 w-4" aria-hidden="true" />
-            Live Countdown
+            Hackathon Submission Deadline
           </div>
 
           <h2 className="relative mb-3 text-3xl font-bold text-[#182241] md:text-4xl">
@@ -166,40 +166,40 @@ export function UpcomingEvent() {
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5f6f9d]">Hackathon timeline</p>
 
             <div className="relative hidden lg:block">
-              <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-[#ccd5e9]" />
+              {/* Line sits at top-section height (120px) + half the dot height (8px) */}
+              <div className="pointer-events-none absolute inset-x-0 top-[128px] border-t border-[#ccd5e9]" />
 
-              <div className="grid grid-cols-5 gap-3">
-                {HACKATHON_TIMELINE.map((milestone) => {
-                  const detailsOnTop = milestone.detailsPosition === 'top';
+              <div className="flex justify-between">
+                {HACKATHON_TIMELINE.map((milestone) => (
+                  <article key={milestone.title} className="flex w-full max-w-[18%] flex-col items-center text-center">
+                    {/* Fixed-height top section — content aligned to bottom so all dots land at the same Y */}
+                    <div className="flex h-[120px] w-full flex-col items-center justify-end pb-3">
+                      {milestone.detailsPosition === 'top' ? (
+                        <>
+                          <h3 className="text-[17px] font-bold leading-tight text-[#22262f]">{milestone.title}</h3>
+                          <p className="mt-2 text-[13px] leading-snug text-[#4b556f]">{milestone.description}</p>
+                        </>
+                      ) : (
+                        <TimelineDateBadge date={milestone.date} placement="above" />
+                      )}
+                    </div>
 
-                  return (
-                    <article key={milestone.title} className="grid min-h-[236px] grid-rows-[1fr_auto_1fr]">
-                      <div className={cn('flex flex-col text-center', detailsOnTop ? 'justify-end pb-6' : 'justify-end pb-2')}>
-                        {!detailsOnTop && <TimelineDateBadge date={milestone.date} placement="above" />}
-                        {detailsOnTop && (
-                          <>
-                            <h3 className="text-[17px] font-bold leading-tight text-[#22262f]">{milestone.title}</h3>
-                            <p className="mt-2 text-[15px] leading-snug text-[#303644]">{milestone.description}</p>
-                          </>
-                        )}
-                      </div>
+                    {/* Dot — centered on the horizontal line */}
+                    <span className="relative z-10 block h-4 w-4 flex-shrink-0 rounded-full border-4 border-white bg-[#1f263a] shadow-[0_0_0_2px_#1f263a]" />
 
-                      <div className="relative flex items-center justify-center">
-                        <span className="relative z-10 h-4 w-4 rounded-full border-4 border-white bg-[#1f263a] shadow-[0_0_0_2px_#1f263a]" />
-                      </div>
-
-                      <div className={cn('flex flex-col text-center', detailsOnTop ? 'justify-start pt-2' : 'justify-start pt-6')}>
-                        {detailsOnTop && <TimelineDateBadge date={milestone.date} placement="below" />}
-                        {!detailsOnTop && (
-                          <>
-                            <h3 className="text-[17px] font-bold leading-tight text-[#22262f]">{milestone.title}</h3>
-                            <p className="mt-2 text-[15px] leading-snug text-[#303644]">{milestone.description}</p>
-                          </>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
+                    {/* Bottom section — content aligned to top */}
+                    <div className="flex min-h-[80px] w-full flex-col items-center justify-start pt-3">
+                      {milestone.detailsPosition === 'top' ? (
+                        <TimelineDateBadge date={milestone.date} placement="below" />
+                      ) : (
+                        <>
+                          <h3 className="text-[17px] font-bold leading-tight text-[#22262f]">{milestone.title}</h3>
+                          <p className="mt-2 text-[13px] leading-snug text-[#4b556f]">{milestone.description}</p>
+                        </>
+                      )}
+                    </div>
+                  </article>
+                ))}
               </div>
             </div>
 
@@ -215,11 +215,11 @@ export function UpcomingEvent() {
           </div>
 
           <p className="relative mb-7 rounded-2xl border border-[#dbe4ff] bg-white/75 px-4 py-3 text-base text-[#5e6b92] md:text-lg">
-            <strong>Registration has begun!</strong> Join us for an exciting hackathon where innovation meets opportunity. Whether you're a seasoned developer or just starting out, this is your chance to compete for attractive prizes! Don't miss out on the chance to showcase your skills and win exciting rewards. Register now and be part of the future of technology!
+            <strong>The challenge is live — let's go!</strong> Registration is closed and the challenge is on. Create your best AI-powered video, submit before the deadline, and compete for exciting prizes. Every second counts!
           </p>
 
           <p className="relative mb-7 rounded-2xl border border-[#dbe4ff] bg-white/75 px-4 py-3 text-base text-[#5e6b92] md:text-lg">
-            Event starts in {countdown.days} days {countdown.hours} hours {countdown.minutes} minutes {countdown.seconds} seconds
+            Submission deadline is in {countdown.days} days {countdown.hours} hours {countdown.minutes} minutes {countdown.seconds} seconds
           </p>
 
           <div className="relative mb-7 grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -277,34 +277,11 @@ export function UpcomingEvent() {
             </p>
             <p className="flex items-center gap-2 rounded-xl border border-[#dde6ff] bg-white/75 px-4 py-3">
               <CalendarDays className="h-4 w-4 text-[#25a27f]" aria-hidden="true" />
-              Hackathon start date: 6 May 2026
+              Hackathon start date: 15 May 2026
             </p>
           </div>
 
-          <div className="relative mb-8 grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-[#dbe4ff] bg-white/80 p-4 text-center">
-              <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-[#5b68a0]">Registration link</p>
-              <a
-                href={ORGANIZER_REGISTRATION_URL}
-                target="_blank"
-                rel="noreferrer"
-                aria-disabled={!hasRegistrationLink}
-                className={cn(
-                  'inline-flex items-center justify-center rounded-xl border border-[#9fb0ee] px-5 py-2 text-sm font-semibold transition-colors',
-                  hasRegistrationLink
-                    ? 'bg-[#eef3ff] text-[#3f57cc] hover:bg-[#e2eaff]'
-                    : 'cursor-not-allowed bg-[#f4f7ff] text-[#7d89ad] opacity-70',
-                )}
-                onClick={(event) => {
-                  if (!hasRegistrationLink) {
-                    event.preventDefault();
-                  }
-                }}
-              >
-                {hasRegistrationLink ? 'Register on organiser page' : 'Add registration link here'}
-              </a>
-            </div>
-
+          <div className="relative mb-8 grid gap-4 md:grid-cols-2">
             <div className="rounded-2xl border border-[#dbe4ff] bg-white/80 p-4 text-center">
               <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-[#5b68a0]">Organiser's website</p>
               <a
@@ -354,85 +331,53 @@ export function UpcomingEvent() {
           </div>
 
           <div className="relative mt-2 grid gap-5 md:grid-cols-2 md:items-start">
-            <div className="flex flex-col">
-              <button
-                type="button"
-                onClick={() => setIsVideoVisible((previous) => !previous)}
-                className="group relative w-full text-[#42507c]"
-              >
-                <span className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7a8dff]/35 to-[#66ddb8]/35 opacity-70 blur-md transition-opacity group-hover:opacity-100" />
-                <span className="relative flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-[#9fb0ee] bg-white/90 px-6 py-5 text-center shadow-[0_20px_50px_-36px_rgba(45,78,194,0.95)] ring-1 ring-[#c9d6ff] transition-all duration-300 hover:-translate-y-1 hover:border-[#8398e6] hover:bg-white">
-                  <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-[#ffd9ba] bg-[#fff4e8] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c26422]">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff9e5e]/70" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f26a1d]" />
-                    </span>
-                    Important
+            <a
+              href={SIGNUP_GUIDE_PDF_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative w-full text-[#42507c]"
+            >
+              <span className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7a8dff]/35 to-[#66ddb8]/35 opacity-70 blur-md transition-opacity group-hover:opacity-100" />
+              <span className="relative flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-[#9fb0ee] bg-white/90 px-6 py-5 text-center shadow-[0_20px_50px_-36px_rgba(45,78,194,0.95)] ring-1 ring-[#c9d6ff] transition-all duration-300 hover:-translate-y-1 hover:border-[#8398e6] hover:bg-white">
+                <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-[#ffd9ba] bg-[#fff4e8] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c26422]">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff9e5e]/70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f26a1d]" />
                   </span>
-                  <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#e7edff] text-[#4f64e6]">
-                    <span className="absolute inset-0 rounded-full bg-[#7085ff]/30 animate-ping" />
-                    <FileText className="relative h-6 w-6" aria-hidden="true" />
-                  </span>
-                  <span className="text-lg font-semibold">Quick Guide: How to join the campaign</span>
-                  <span className="text-xs font-medium uppercase tracking-widest text-[#5f72ff]">
-                    {isVideoVisible ? 'Hide video' : 'Watch video'}
-                  </span>
+                  Important
                 </span>
-              </button>
-
-              <div
-                className={cn(
-                  'w-full overflow-hidden transition-all duration-500',
-                  isVideoVisible ? 'mt-4 max-h-[420px] opacity-100' : 'max-h-0 opacity-0',
-                )}
-              >
-                <div className="rounded-2xl border border-[#d7e0ff] bg-white/85 p-3 shadow-sm">
-                  <video className="w-full rounded-xl" controls preload="metadata" src={EVENT_NOTICE_VIDEO_URL}>
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col">
-              <button
-                type="button"
-                onClick={() => setIsRolesVideoVisible((previous) => !previous)}
-                className="group relative w-full text-[#42507c]"
-              >
-                <span className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7a8dff]/35 to-[#66ddb8]/35 opacity-70 blur-md transition-opacity group-hover:opacity-100" />
-                <span className="relative flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-[#9fb0ee] bg-white/90 px-6 py-5 text-center shadow-[0_20px_50px_-36px_rgba(45,78,194,0.95)] ring-1 ring-[#c9d6ff] transition-all duration-300 hover:-translate-y-1 hover:border-[#8398e6] hover:bg-white">
-                  <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-[#ffd9ba] bg-[#fff4e8] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c26422]">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff9e5e]/70" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f26a1d]" />
-                    </span>
-                    Important
-                  </span>
-                  <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#e7edff] text-[#4f64e6]">
-                    <span className="absolute inset-0 rounded-full bg-[#7085ff]/30 animate-ping" />
-                    <FileText className="relative h-6 w-6" aria-hidden="true" />
-                  </span>
-                  <span className="text-lg font-semibold">Quick Guide: Role Creation</span>
-                  <span className="text-xs font-medium uppercase tracking-widest text-[#5f72ff]">
-                    {isRolesVideoVisible ? 'Hide video' : 'Watch video'}
-                  </span>
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#e7edff] text-[#4f64e6]">
+                  <span className="absolute inset-0 rounded-full bg-[#7085ff]/30 animate-ping" />
+                  <FileText className="relative h-6 w-6" aria-hidden="true" />
                 </span>
-              </button>
+                <span className="text-lg font-semibold">Quick Guide: How to join the Challenge</span>
+                <span className="text-xs font-medium uppercase tracking-widest text-[#5f72ff]">Open PDF</span>
+              </span>
+            </a>
 
-              <div
-                className={cn(
-                  'w-full overflow-hidden transition-all duration-500',
-                  isRolesVideoVisible ? 'mt-4 max-h-[420px] opacity-100' : 'max-h-0 opacity-0',
-                )}
-              >
-                <div className="rounded-2xl border border-[#d7e0ff] bg-white/85 p-3 shadow-sm">
-                  <video className="w-full rounded-xl" controls preload="metadata" src={EVENT_ROLE_CREATION_VIDEO_URL}>
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-            </div>
+            <a
+              href={ALIBABA_BRIEF_PDF_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative w-full text-[#42507c]"
+            >
+              <span className="pointer-events-none absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7a8dff]/35 to-[#66ddb8]/35 opacity-70 blur-md transition-opacity group-hover:opacity-100" />
+              <span className="relative flex flex-col items-center gap-3 rounded-2xl border-2 border-dashed border-[#9fb0ee] bg-white/90 px-6 py-5 text-center shadow-[0_20px_50px_-36px_rgba(45,78,194,0.95)] ring-1 ring-[#c9d6ff] transition-all duration-300 hover:-translate-y-1 hover:border-[#8398e6] hover:bg-white">
+                <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-[#ffd9ba] bg-[#fff4e8] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#c26422]">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff9e5e]/70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#f26a1d]" />
+                  </span>
+                  Important
+                </span>
+                <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#e7edff] text-[#4f64e6]">
+                  <span className="absolute inset-0 rounded-full bg-[#7085ff]/30 animate-ping" />
+                  <FileText className="relative h-6 w-6" aria-hidden="true" />
+                </span>
+                <span className="text-lg font-semibold">Official Challenge Guide</span>
+                <span className="text-xs font-medium uppercase tracking-widest text-[#5f72ff]">Open PDF</span>
+              </span>
+            </a>
           </div>
         </div>
       </div>

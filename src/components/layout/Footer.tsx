@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 
+const ALIBABA_BRIEF_PDF_URL = new URL('../../../Alibaba Cloud Singapore Stories Unearthed WAN AI Video Challenge overview and brief.pdf', import.meta.url).href;
+const SIGNUP_GUIDE_PDF_URL = new URL('../../../Signup Guide.pdf', import.meta.url).href;
+
 export function Footer() {
   return (
     <footer className="border-t border-[#dfe5f4] bg-[#f4f7ff] py-12">
@@ -29,16 +32,40 @@ export function Footer() {
             <h4 className="mb-4 font-semibold text-[#182241]">Resources</h4>
             <ul className="space-y-2 text-sm text-[#6f7895]">
               <li>
-                <a
-                  href="/Kakis%20AI%20User%20Documentation%20for%20hackathon.pdf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-[#182241]"
-                >
+                <a href="/Kakis%20AI%20User%20Documentation%20for%20hackathon.pdf?v=202605151" target="_blank" rel="noreferrer" className="hover:text-[#182241]">
                   Documentation
                 </a>
               </li>
               <li><Link to="/faqs" className="hover:text-[#182241]">FAQs</Link></li>
+              <li>
+                <a href={ALIBABA_BRIEF_PDF_URL} target="_blank" rel="noreferrer" className="hover:text-[#182241]">
+                  Alibaba Cloud Singapore Stories Unearthed WAN AI Video Challenge Overview and Brief
+                </a>
+              </li>
+              <li>
+                <a href={SIGNUP_GUIDE_PDF_URL} target="_blank" rel="noreferrer" className="hover:text-[#182241]">
+                  Signup Guide
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.youtube.com/watch?v=6RTP4qJyc-U"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 font-semibold text-[#f26a1d] hover:text-[#d95c10]"
+                >
+                  <span className="relative flex h-1.5 w-1.5 shrink-0">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f26a1d]/70" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#f26a1d]" />
+                  </span>
+                  Online Workshop Recording
+                </a>
+              </li>
+              <li>
+                <a href="https://www.youtube.com/watch?v=PRjKvbDIjMg" target="_blank" rel="noreferrer" className="hover:text-[#182241]">
+                  Training Video
+                </a>
+              </li>
             </ul>
           </div>
 

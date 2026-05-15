@@ -11,6 +11,7 @@ import {
   Handshake,
   Heart,
   PenTool,
+  Play,
   Sparkles,
   Wand2,
 } from 'lucide-react';
@@ -135,7 +136,7 @@ export default function About() {
                       className="h-12 bg-gradient-to-r from-[#6f7cff] to-[#8977ff] px-7 text-white hover:from-[#6574ff] hover:to-[#7e6dff]"
                       asChild
                     >
-                      <a href="https://app-staging.kakis.ai/" target="_blank" rel="noreferrer">
+                      <a href="https://app.kakis.ai/" target="_blank" rel="noreferrer">
                         Start Creating
                         <ArrowRight className="h-4 w-4" />
                       </a>
@@ -150,6 +151,21 @@ export default function About() {
                         Meet The Team
                       </a>
                     </Button>
+                  </div>
+                  <div className="mt-6 overflow-hidden rounded-2xl border border-[#ffe0b2] shadow-[0_8px_24px_rgba(245,158,11,0.18)]">
+                    <div className="flex items-center gap-2 bg-gradient-to-r from-[#f59e0b] to-[#f97316] px-4 py-2.5">
+                      <Play className="h-4 w-4 fill-white text-white" />
+                      <span className="text-sm font-semibold text-white">The Storytelling Journey</span>
+                    </div>
+                    <div className="aspect-video">
+                      <iframe
+                        src="https://www.youtube.com/embed/RDSnf_BM9Ew"
+                        title="The Storytelling Journey"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="h-full w-full"
+                      />
+                    </div>
                   </div>
                 </div>
 

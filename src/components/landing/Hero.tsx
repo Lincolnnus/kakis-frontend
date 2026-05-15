@@ -2,11 +2,6 @@ import { Fragment } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Film, FileText, Layers, ListChecks, Sparkles } from 'lucide-react';
 
-// Import storyboard thumbnails for the hover preview
-import chronoInterventionThumb from '@/assets/thumbnails/chrono-intervention-echoes-of-tomorrow.png';
-import ghostInTheWiresThumb from '@/assets/thumbnails/ghost-in-the-wires.png';
-import signalFromTheSilentWorldThumb from '@/assets/thumbnails/signal-from-the-silent-world.png';
-
 const workflowSteps = [
   { icon: FileText, title: 'Scripts'},
   { icon: Layers, title: 'Characters & Scenes'},
@@ -21,7 +16,7 @@ export function Hero() {
       <div className="pointer-events-none absolute top-0 left-1/2 h-[620px] w-[900px] -translate-x-1/2 rounded-full bg-[rgba(138,160,255,0.28)] blur-[130px]" />
       <div className="pointer-events-none absolute -bottom-16 right-0 h-[420px] w-[420px] rounded-full bg-[rgba(180,157,255,0.24)] blur-[120px]" />
 
-      <div className="container mx-auto px-4 py-24 md:py-36 relative z-10">
+      <div className="container mx-auto px-4 pt-24 pb-10 md:pt-36 md:pb-12 relative z-10">
         <div className="mx-auto max-w-6xl text-center">
           {/* Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#cfd8ff] bg-[#e8edff] px-4 py-1.5 text-sm">
@@ -49,7 +44,7 @@ export function Hero() {
               className="h-12 bg-gradient-to-r from-[#6f7cff] to-[#8977ff] px-8 text-base text-white shadow-[0_10px_30px_rgba(99,102,241,0.25)] hover:from-[#6574ff] hover:to-[#7e6dff]"
               asChild
             >
-              <a href="https://app-staging.kakis.ai/" target="_blank" rel="noreferrer">
+              <a href="https://app.kakis.ai/" target="_blank" rel="noreferrer">
                 Explore Kakis
               </a>
             </Button>
@@ -89,7 +84,7 @@ export function Hero() {
               </div>
             </div>
             <p className="mt-6 mb-5 text-center text-base font-medium text-[#6f7895] md:mb-6 md:text-lg">
-              Check out our video tutorial below!
+              Watch our videos below!
             </p>
             <div className="mb-10 flex justify-center md:mb-12">
               <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#cfd8ff] bg-gradient-to-b from-[#eef2ff] to-[#dde4ff] text-[#5368ff] shadow-[0_12px_24px_rgba(83,104,255,0.2)] animate-bounce">
@@ -98,61 +93,41 @@ export function Hero() {
                 </svg>
               </div>
             </div>
-            <div className="mb-12 flex justify-center">
-              <a
-                href="/Kakis-ai-training-video.mp4"
-                target="_blank"
-                rel="noreferrer"
-                className="flex h-20 w-20 items-center justify-center rounded-2xl border border-[#dfe5f4] bg-[#e8edff] text-[#5368ff] shadow-[0_10px_24px_rgba(83,104,255,0.16)] transition-colors hover:bg-[#dfe6ff] md:h-24 md:w-24"
-                aria-label="Open Kakis tutorial video"
-              >
-                <Film className="h-9 w-9 md:h-10 md:w-10" />
-              </a>
+            <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="overflow-hidden rounded-2xl border border-[#dfe5f4] shadow-[0_10px_24px_rgba(83,104,255,0.14)]">
+                <div className="flex items-center gap-2 bg-[#e8edff] px-4 py-2.5">
+                  <Film className="h-4 w-4 text-[#5368ff]" />
+                  <span className="text-sm font-semibold text-[#3a4a7a]">Video tutorial</span>
+                </div>
+                <div className="aspect-video">
+                  <iframe
+                    src="https://www.youtube.com/embed/6RTP4qJyc-U"
+                    title="Kakis AI video tutorial"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="h-full w-full"
+                  />
+                </div>
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-[#dfe5f4] shadow-[0_10px_24px_rgba(83,104,255,0.14)]">
+                <div className="flex items-center gap-2 bg-[#e8edff] px-4 py-2.5">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 fill-[#5368ff]" aria-hidden="true"><path d="M10 9.5 15.5 12 10 14.5V9.5ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                  <span className="text-sm font-semibold text-[#3a4a7a]">Sample video from our platform</span>
+                </div>
+                <div className="aspect-video">
+                  <iframe
+                    src="https://www.youtube.com/embed/NXaU5vx2igE"
+                    title="Sample video from Kakis AI platform"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="h-full w-full"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Showcase Grid */}
-        <div className="mx-auto max-w-5xl">
-          <div className="grid grid-cols-3 gap-3 md:gap-4">
-            {[
-              {
-                src: chronoInterventionThumb,
-                alt: 'Chrono Intervention: Echoes of Tomorrow',
-                label: 'Chrono Intervention: Echoes of Tomorrow',
-              },
-              {
-                src: ghostInTheWiresThumb,
-                alt: 'Ghost in the Wires',
-                label: 'Ghost in the Wires',
-              },
-              {
-                src: signalFromTheSilentWorldThumb,
-                alt: 'Signal from the Silent World',
-                label: 'Signal from the Silent World',
-              },
-            ].map((item) => (
-              <div key={item.label} className="relative overflow-hidden rounded-xl border border-[#dfe5f4] group cursor-pointer bg-white/70">
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={item.src}
-                    alt={item.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/78 via-[#0f172a]/18 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-                  <p className="truncate text-xs font-medium text-white md:text-sm">{item.label}</p>
-                  <div className="flex items-center gap-1 rounded-full bg-[#e8ecff]/90 px-2 py-0.5">
-                    <Sparkles className="h-3 w-3 text-[#5368ff]" />
-                    <span className="text-[10px] font-medium text-[#5368ff]">AI</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
       </div>
     </section>
   );

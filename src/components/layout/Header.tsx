@@ -11,10 +11,10 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
+import { Menu, X, CreditCard, User, LogOut, Sparkles, BookOpen } from 'lucide-react';
 import { useState, ReactNode } from 'react';
 
-const APP_STAGING_URL = 'https://app-staging.kakis.ai/';
+const APP_STAGING_URL = 'https://app.kakis.ai/';
 
 interface HeaderProps {
   children?: ReactNode;
@@ -51,6 +51,15 @@ export function Header({ children }: HeaderProps) {
           <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">
             About
           </Link>
+          <a
+            href="/Kakis AI User Documentation for hackathon.pdf"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-1.5 rounded-md border border-[#d2dbf2] bg-white/80 px-3 py-1.5 text-sm font-medium text-[#4f5d85] transition-colors hover:border-[#acbcf5] hover:bg-white hover:text-[#3d4d78]"
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            Docs
+          </a>
           
           {isAuthenticated ? (
             <>
@@ -139,6 +148,17 @@ export function Header({ children }: HeaderProps) {
               </>
             )}
             
+            <a
+              href="/Kakis AI User Documentation for hackathon.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <BookOpen className="h-4 w-4" />
+              Documentation
+            </a>
+
             {isAuthenticated ? (
               <>
                 <div className="flex items-center gap-2 pb-2">
