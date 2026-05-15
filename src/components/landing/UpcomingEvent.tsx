@@ -155,15 +155,15 @@ export function UpcomingEvent() {
 
           <div className="relative mb-4 inline-flex items-center gap-2 rounded-full border border-[#cdd8ff] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#4e63d9]">
             <Sparkles className="h-4 w-4" aria-hidden="true" />
-            Hackathon Submission Deadline
+            Challenge Submission Deadline
           </div>
 
           <h2 className="relative mb-3 text-3xl font-bold text-[#182241] md:text-4xl">
-            Upcoming event: Stories Unearthed: WAN AI Video Challenge
+            Upcoming event: Alibaba Cloud WAN AI Video Challenge
           </h2>
 
           <div className="relative mb-7 rounded-2xl border border-[#dbe4ff] bg-white/80 px-4 py-6 md:px-6">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5f6f9d]">Hackathon timeline</p>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-[#5f6f9d]">Alibaba Cloud WAN AI Video Challenge Timeline</p>
 
             <div className="relative hidden lg:block">
               {/* Line sits at top-section height (120px) + half the dot height (8px) */}
