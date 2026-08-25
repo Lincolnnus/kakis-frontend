@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Play, Clapperboard, Sparkles, Zap, CalendarDays, CreditCard } from 'lucide-react';
 import { KakisLogo } from '@/components/shared/KakisLogo';
 import bannerArtwork from '@/assets/landing/wan3-launch-banner.webp';
+import alibabaCloudLogo from '@/assets/landing/Alibaba_Cloud_Logo.png';
 
 const APP_STAGING_URL = 'https://app.kakis.ai/';
 
@@ -83,7 +84,13 @@ export function Wan3LaunchBanner() {
             </span>
 
             <div className="mt-5 flex flex-wrap items-center gap-3 text-white">
-              <span className="text-lg font-semibold leading-tight text-[#ff6a00]">Alibaba Cloud</span>
+              <img
+                src={alibabaCloudLogo}
+                alt="Alibaba Cloud"
+                width={1024}
+                height={129}
+                className="h-[18px] w-auto"
+              />
               <span className="inline-flex items-center gap-3">
                 <span aria-hidden="true" className="text-[#8b5cf6]">&times;</span>
                 <KakisLogo className="h-7 w-7" />
