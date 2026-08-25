@@ -8,11 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { Menu, X, CreditCard, User, LogOut, Sparkles, BookOpen } from 'lucide-react';
+import { Menu, X, CreditCard, User, LogOut, Sparkles } from 'lucide-react';
 import { useState, ReactNode } from 'react';
+import { KakisLogo } from '@/components/shared/KakisLogo';
 
 const APP_STAGING_URL = 'https://app.kakis.ai/';
 
@@ -23,10 +24,7 @@ interface HeaderProps {
 export function Header({ children }: HeaderProps) {
   const { isAuthenticated, user, logout } = useAuth();
   const { currentPlan } = useSubscription();
-  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const isLanding = location.pathname === '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#dfe5f4] bg-[#f9fbff]/95 backdrop-blur supports-[backdrop-filter]:bg-[#f9fbff]/70">
@@ -35,32 +33,17 @@ export function Header({ children }: HeaderProps) {
           {children}
           {/* Brand */}
           <Link to={isAuthenticated ? "/dashboard" : "/"} className="flex items-center gap-2">
+            <KakisLogo className="h-8 w-8" />
             <span className="text-xl font-bold">Kakis AI</span>
           </Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-6 md:flex">
-          {isLanding && (
-            <>
-              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground">
-                Features
-              </a>
-            </>
-          )}
           <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">
             About
           </Link>
-          <a
-            href="/Kakis AI User Documentation for hackathon.pdf"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 rounded-md border border-[#d2dbf2] bg-white/80 px-3 py-1.5 text-sm font-medium text-[#4f5d85] transition-colors hover:border-[#acbcf5] hover:bg-white hover:text-[#3d4d78]"
-          >
-            <BookOpen className="h-3.5 w-3.5" />
-            Docs
-          </a>
-          
+
           {isAuthenticated ? (
             <>
               <DropdownMenu>
@@ -112,7 +95,7 @@ export function Header({ children }: HeaderProps) {
               </Button>
               <Button size="sm" className="bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]" asChild>
                 <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">
-                  Get Started
+                  Free trial
                 </a>
               </Button>
             </>
@@ -136,28 +119,13 @@ export function Header({ children }: HeaderProps) {
       {mobileMenuOpen && (
         <div className="border-t bg-background p-4 md:hidden">
           <nav className="flex flex-col gap-4">
-            {isLanding && (
-              <>
-                <a 
-                  href="#features" 
-                  className="text-muted-foreground hover:text-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Features
-                </a>
-              </>
-            )}
-            
-            <a
-              href="/Kakis AI User Documentation for hackathon.pdf"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            <Link
+              to="/about"
+              className="text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <BookOpen className="h-4 w-4" />
-              Documentation
-            </a>
+              About
+            </Link>
 
             {isAuthenticated ? (
               <>
@@ -191,7 +159,7 @@ export function Header({ children }: HeaderProps) {
                 </Button>
                 <Button className="w-full bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]" asChild>
                   <a href={APP_STAGING_URL} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>
-                    Get Started
+                    Free trial
                   </a>
                 </Button>
               </>

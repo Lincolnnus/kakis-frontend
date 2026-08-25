@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { KakisLogo } from '@/components/shared/KakisLogo';
 
 const ALIBABA_BRIEF_PDF_URL = new URL('../../../Alibaba Cloud Singapore Stories Unearthed WAN AI Video Challenge overview and brief.pdf', import.meta.url).href;
 const SIGNUP_GUIDE_PDF_URL = new URL('../../../Signup Guide.pdf', import.meta.url).href;
@@ -10,11 +11,19 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center gap-2">
+              <KakisLogo className="h-8 w-8" />
               <span className="text-xl font-bold text-[#182241]">Kakis AI</span>
             </Link>
             <p className="mt-4 text-sm text-[#6f7895]">
               AI-powered storyboarding for filmmakers, animators, and creative professionals.
+            </p>
+            <p className="mt-2 text-sm text-[#6f7895]">
+              Built by{' '}
+              <a href="https://www.fooyo.sg/" target="_blank" rel="noreferrer" className="font-medium hover:text-[#182241]">
+                Fooyo
+              </a>
+              , a Singapore-based digital transformation studio founded in 2014.
             </p>
           </div>
 
@@ -38,8 +47,17 @@ export function Footer() {
               </li>
               <li><Link to="/faqs" className="hover:text-[#182241]">FAQs</Link></li>
               <li>
+                <a href="https://www.youtube.com/watch?v=PRjKvbDIjMg" target="_blank" rel="noreferrer" className="hover:text-[#182241]">
+                  Training Video
+                </a>
+              </li>
+            </ul>
+
+            <h4 className="mb-4 mt-6 font-semibold text-[#182241]">Challenge Resources</h4>
+            <ul className="space-y-2 text-sm text-[#6f7895]">
+              <li>
                 <a href={ALIBABA_BRIEF_PDF_URL} target="_blank" rel="noreferrer" className="hover:text-[#182241]">
-                  Alibaba Cloud Singapore Stories Unearthed WAN AI Video Challenge Overview and Brief
+                  Alibaba Cloud WAN AI Video Challenge Brief
                 </a>
               </li>
               <li>
@@ -52,18 +70,9 @@ export function Footer() {
                   href="https://www.youtube.com/watch?v=6RTP4qJyc-U"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 font-semibold text-[#f26a1d] hover:text-[#d95c10]"
+                  className="hover:text-[#182241]"
                 >
-                  <span className="relative flex h-1.5 w-1.5 shrink-0">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f26a1d]/70" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#f26a1d]" />
-                  </span>
                   Online Workshop Recording
-                </a>
-              </li>
-              <li>
-                <a href="https://www.youtube.com/watch?v=PRjKvbDIjMg" target="_blank" rel="noreferrer" className="hover:text-[#182241]">
-                  Training Video
                 </a>
               </li>
             </ul>

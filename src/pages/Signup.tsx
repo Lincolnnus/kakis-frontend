@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { KakisLogo } from '@/components/shared/KakisLogo';
 
 const APP_STAGING_URL = 'https://app.kakis.ai/';
 
@@ -38,7 +39,8 @@ export default function Signup() {
     <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-md">
         {/* Brand */}
-        <Link to="/" className="mb-8 flex items-center justify-center">
+        <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
+          <KakisLogo className="h-10 w-10" />
           <span className="text-2xl font-bold">Kakis AI</span>
         </Link>
 

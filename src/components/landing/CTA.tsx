@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useScrollReveal } from '@/hooks/use-scroll-reveal';
+import { PromoBanner } from '@/components/shared/PromoBanner';
 
 const APP_STAGING_URL = 'https://app.kakis.ai/';
 
@@ -25,7 +26,7 @@ export function CTA() {
             Stop Storyboarding the Hard Way
           </h2>
           <p className="mb-8 text-lg text-[#6f7895]">
-            Join thousands of creators using AI to go from script to cinematic in minutes. 
+            Go from script to cinematic in minutes — powered by AI, driven by your imagination.
             Start free — no credit card required.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -39,6 +40,8 @@ export function CTA() {
               <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">Sign In</a>
             </Button>
           </div>
+
+          <PromoBanner className="mt-12 text-left" />
         </div>
       </div>
     </section>
