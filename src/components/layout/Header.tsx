@@ -102,17 +102,34 @@ export function Header({ children }: HeaderProps) {
           )}
         </nav>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
+        {/* Mobile controls — the trial CTA stays visible rather than hiding
+            inside the collapsed menu. */}
+        <div className="flex items-center gap-2 md:hidden">
+          {!isAuthenticated && (
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]"
+              asChild
+            >
+              <a href={APP_STAGING_URL} target="_blank" rel="noreferrer">
+                Free trial
+              </a>
+            </Button>
           )}
-        </button>
+          <button
+            type="button"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            className="flex h-9 w-9 items-center justify-center rounded-md text-[#182241] hover:bg-[#e8edfb] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6f7cff]"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -155,11 +172,6 @@ export function Header({ children }: HeaderProps) {
                 <Button variant="outline" className="w-full" asChild>
                   <a href={APP_STAGING_URL} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>
                     Sign In
-                  </a>
-                </Button>
-                <Button className="w-full bg-gradient-to-r from-[#6f7cff] to-[#8977ff] text-white hover:from-[#6574ff] hover:to-[#7e6dff]" asChild>
-                  <a href={APP_STAGING_URL} target="_blank" rel="noreferrer" onClick={() => setMobileMenuOpen(false)}>
-                    Free trial
                   </a>
                 </Button>
               </>

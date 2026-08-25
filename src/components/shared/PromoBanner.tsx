@@ -1,4 +1,4 @@
-import { Gift, Clock } from 'lucide-react';
+import { Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function PromoBanner({ className }: { className?: string }) {
@@ -15,11 +15,7 @@ export function PromoBanner({ className }: { className?: string }) {
             <Gift className="h-5 w-5" />
           </div>
           <div>
-            <p className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.12em] text-[#c26422]">
-              <Clock className="h-3.5 w-3.5" />
-              Challenge Exclusive · Limited Time
-            </p>
-            <p className="mt-1 text-base font-semibold text-[#182241] md:text-lg">
+            <p className="text-base font-semibold text-[#182241] md:text-lg">
               +30% bonus credits on every Kakis AI top-up
             </p>
             <p className="mt-0.5 text-sm text-[#6f7895]">
